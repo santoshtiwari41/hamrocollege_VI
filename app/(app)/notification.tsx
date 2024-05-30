@@ -1,12 +1,36 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
 
-const notification = () => {
+import EventList from '@/components/eventList';
+
+import Animated, { FadeInLeft,FadeInDown } from 'react-native-reanimated';
+import CalendarComponent from '@/components/CalendarComponent';
+const CustomCalendar = () => {
+  const [selectedDate, setSelectedDate] = useState('');
+
+  const handleDate = (date: string) => {
+    console.log(date);
+    setSelectedDate(date); 
+  };
+
   return (
-    <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-      <Text>notification</Text>
-    </View>
-  )
-}
+    <Animated.View sharedTransitionTag="sharedTag">
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false} >
+    <CalendarComponent dayData={handleDate} />
+       <EventList />
+  </ScrollView>
+  </Animated.View>
+    
+  );
+};
 
-export default notification
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+   backgroundColor:'#1A162B'
+  },
+});
+
+export default CustomCalendar;

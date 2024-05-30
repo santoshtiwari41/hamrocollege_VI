@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import EventList from '@/components/eventList';
 import Calendar from '@/components/calendar'; 
 import { Colors } from '@/constants/Colors';
-
+import Animated, { FadeInLeft,FadeInDown } from 'react-native-reanimated';
 const CustomCalendar = () => {
   const [selectedDate, setSelectedDate] = useState('');
 
@@ -14,10 +14,13 @@ const CustomCalendar = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-      <Calendar dayData={handleDate} />
-      <EventList />
-    </ScrollView>
+    <Animated.View sharedTransitionTag="sharedTag">
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false} >
+    <Calendar dayData={handleDate} />
+       <EventList />
+  </ScrollView>
+  </Animated.View>
+    
   );
 };
 
@@ -26,7 +29,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.button,
+   backgroundColor:'#1A162B'
   },
 });
 

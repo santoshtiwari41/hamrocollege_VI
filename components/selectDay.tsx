@@ -1,70 +1,91 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Pressable } from 'react-native';
+
 const deviceWidth = Dimensions.get('window').width;
-interface Date {
-date:string
+
+interface DateProps {
+  date: string;
 }
-const SelectDay: React.FC<Date> = ({date}) => {
- console.log(date)
+
+const SelectDay: React.FC<DateProps> = ({ date }) => {
+  const datee = new Date(date);
+  const day = datee.getDate();
+  const year = datee.getFullYear();
+  const month = datee.toLocaleString('default', { month: 'long' }); 
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const week = days[datee.getDay()];
+
   return (
-    <View> 
-        <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 20, marginBottom: 20 }}>Upcoming Events</Text>
-     
-    <TouchableOpacity  >
-      <View style={styles.container}>
-        <View style={styles.infoContainer}>
-          <Text style={styles.title}>{date}</Text>
-          <Text style={styles.description}>item.description</Text>
+    <View style={styles.ocontainer}> 
+      <TouchableOpacity>
+        <View style={styles.container}>
+          <View style={styles.infoContainer}>
+            <Text style={styles.dateText}>{`${week}, ${month} ${day}, ${year}`}</Text>
+            <Text style={styles.description}>Event.description </Text>
+          </View>
+          <Pressable style={styles.button}>
+            <Text style={styles.buttonText}>View More</Text>
+          </Pressable>
         </View>
-        <Pressable style={styles.button}>
-          <Text style={{ color: '#98B113', marginRight: 8 }}>View More</Text>
-          
-        </Pressable>
-      </View>
-    </TouchableOpacity>
-  </View>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#ffffff',
     padding: 16,
-    backgroundColor: '#C2D8E3',
+    marginTop:10,
+    borderRadius: 10,
     marginBottom: 20,
     width: '95%',
     alignSelf: 'center',
-    borderRadius: 10,
-    height: 100,
+    height: 150,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    shadowColor: 'green',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
   ocontainer: {
     padding: 16,
+    paddingBottom:0,
     width: deviceWidth,
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35,
     paddingTop: 5,
+    alignItems: 'center',
   },
   infoContainer: {
     flex: 1,
   },
-  title: {
-    fontSize: 16,
+  dateText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
   },
   description: {
-    color: 'gray',
+    color: '#666',
+    fontSize: 16,
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: 100,
-    height: 40,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     backgroundColor: '#1A162B',
-    justifyContent: 'center',
     borderRadius: 10,
-    padding: 10,
+  },
+  buttonText: {
+    color: '#98B113',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 

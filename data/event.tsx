@@ -19,9 +19,9 @@ export const events = [
     },
     {
       id: '4',
-      title: 'Science Fair',
-      date: '2024-05-25',
-      description: 'Annual science fair with exciting projects.',
+      title: 'hackathon',
+      date: '2024-05-15',
+      description: 'hackathon programming day starts from jun 7',
     },
     
   ];
