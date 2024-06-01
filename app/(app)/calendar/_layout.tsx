@@ -5,12 +5,5 @@ export default function Layout() {
   >
      <Stack.Screen name='index'/>
      <Stack.Screen name="[eventID]" options={{}} />
-     <Stack.Screen
-        name="modal"
-        options={{
-         
-          presentation: 'modal',
-        }}
-      />
     </Stack>;
 }

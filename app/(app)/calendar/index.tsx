@@ -1,25 +1,18 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import React, { useState } from 'react';
-
+import {StyleSheet, ScrollView } from 'react-native';
+import React from 'react';
 import EventList from '@/components/eventList';
-import Calendar from '@/components/calendar'; 
-import { Colors } from '@/constants/Colors';
-import Animated, { FadeInLeft,FadeInDown } from 'react-native-reanimated';
+import Calendar from '@/components/CalendarComponent'; 
+import Animated from 'react-native-reanimated';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
 const CustomCalendar = () => {
-  const [selectedDate, setSelectedDate] = useState('');
-
-  const handleDate = (date: string) => {
-    console.log(date);
-    setSelectedDate(date); 
-  };
-
+ 
   return (
-    <Animated.View sharedTransitionTag="sharedTag">
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false} >
-    <Calendar dayData={handleDate} />
+       <Calendar/>
        <EventList />
   </ScrollView>
-  </Animated.View>
+
     
   );
 };
@@ -28,8 +21,8 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-   backgroundColor:'#1A162B'
+   backgroundColor:'#E2E2E2',
+   paddingTop:hp('5.5%')
   },
 });
 

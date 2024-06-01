@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, TouchableOpacity, StyleSheet, GestureResponderEvent } from 'react-native';
 import { Tabs } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Feather } from '@expo/vector-icons';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming,withSpring,FadeInDown } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, Easing } from 'react-native-reanimated';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default function TabLayout() {
   return (
@@ -20,14 +21,14 @@ export default function TabLayout() {
         })}
       >
         <Tabs.Screen
-          name="home"
+          name="home/index"
           options={{
             title: 'Home',
             tabBarIcon: ({ color }) => <Feather size={24} name="home" color={color} />,
           }}
         />
         <Tabs.Screen
-          name="notification"
+          name="notification/index"
           options={{
             title: 'Notification',
             tabBarIcon: ({ color }) => <Feather size={24} name="bell" color={color} />,
@@ -41,7 +42,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="profile"
+          name="profile/index"
           options={{
             title: 'Profile',
             tabBarIcon: ({ color }) => <Feather size={24} name="user" color={color} />,
@@ -60,28 +61,26 @@ interface CustomTabBarButtonProps {
 
 const CustomTabBarButton: React.FC<CustomTabBarButtonProps> = ({ children, onPress, accessibilityState }) => {
   const isSelected = accessibilityState?.selected ?? false;
-  const backgroundColor = useSharedValue(isSelected ? '#DD486E' : 'white');
-  const scale = useSharedValue(isSelected ? 1.1 : 2);
-  const shadowOpacity = useSharedValue(isSelected ? 0.3 : 0);
+  const translateY = useSharedValue(isSelected ? 0 : 6);
+  const scale = useSharedValue(isSelected ? 1.2 : 1);
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: withTiming(backgroundColor.value, { duration: 300 }),
-      // transform: [{ scale: withSpring(scale.value) }],
-      // shadowOpacity: withTiming(shadowOpacity.value, { duration: 300 }),
-     
+      transform: [
+        { translateY: withTiming(translateY.value, { duration: 400, easing: Easing.bezier(0.2, 0, 0.7, 1) }) },
+        { scale: withSpring(scale.value, { damping: 10, stiffness: 100 }) }
+      ],
     };
   });
 
-  React.useEffect(() => {
-    backgroundColor.value = isSelected ? '#DD486E' : 'white';
+  useEffect(() => {
+    translateY.value = isSelected ? -1 : 7;
+    scale.value = isSelected ? 1.1 : 0.9;
   }, [isSelected]);
 
   return (
-    <Animated.View style={[styles.button, animatedStyle]} entering={FadeInDown.duration(800).delay(100)}>
-      <TouchableOpacity
-        style={styles.innerButton}
-        onPress={onPress}
-      >
+    <Animated.View style={[styles.button, isSelected && styles.selectedButton, animatedStyle]}>
+      <TouchableOpacity onPress={onPress}>
         {children}
       </TouchableOpacity>
     </Animated.View>
@@ -97,7 +96,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#ddd',
     paddingBottom: 5,
-    height: 60,
+    height: hp('7%'),
   },
   button: {
     flex: 1,
@@ -105,12 +104,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginHorizontal: 12,
     height: 34,
-  },
-  innerButton: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 5,
-    borderRadius: 8,
+    backgroundColor: 'white',
   },
   selectedButton: {
     backgroundColor: '#DD486E',

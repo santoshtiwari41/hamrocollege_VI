@@ -64,7 +64,7 @@ export default function EventDetail() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#E2E2E2',
     alignItems: "center",
     justifyContent: "center",
     padding: 16,

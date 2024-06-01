@@ -1,47 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import CalendarPicker, { DateChangedCallback } from "react-native-calendar-picker";
 import moment from "moment";
-import  selectDay from '@/components/selectDay'
 import SelectDay from "@/components/selectDay";
-const events = [
-  {
-    id: 1,
-    title: 'sports week ',
-    date: '2024-05-26',
-    description: 'sports week ',
-    holiday: true
-  },
-  {
-    id: 2,
-    title: 'quiz ',
-    date: '2024-05-21',
-    description: 'quiz competition',
-    holiday: true
-  },
-  {
-    id: 3,
-    title: 'farewell ',
-    date: '2024-05-01',
-    description: 'farewell competition',
-    holiday: true
-  },
-  {
-    id: 4,
-    title: 'welcome ',
-    date: '2024-05-11',
-    description: 'welcome competition',
-    holiday: false
-  }
-];
+import { events } from "@/data/event";
 
-const Notification = () => {
+const CalendarComponent = () => {
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [customDatesStyles, setCustomDatesStyles] = useState<any[]>([]);
 
   const onDateChange: DateChangedCallback = (date: Date) => {
     setSelectedStartDate(date);
-    console.log(date);
+   
   };
 
   useEffect(() => {
@@ -50,48 +20,80 @@ const Notification = () => {
 
   const generateCustomDatesStyles = () => {
     const customStyles = [];
-    const startDate = moment().startOf('year'); // Start from the beginning of the year
-    const endDate = moment().endOf('year'); // End at the end of the year
+    const startDate = moment().startOf("year");
+    const endDate = moment().endOf("year");
 
     let day = startDate.clone();
 
     while (day.isBefore(endDate)) {
-      const event = events.find(event => moment(event.date).isSame(day, 'day'));
+      const event = events.find((event) => moment(event.date).isSame(day, "day"));
+      const isEventDay = !!event;
       const isHoliday = event ? event.holiday : false;
+      const isSaturday = day.day() === 6; 
+      const isToday = moment().isSame(day, "day")
+      let textStyle = {
+        color: isSaturday
+          ? "red"
+          : isEventDay
+          ? isHoliday
+            ? "red"
+            : "green"
+          : "black",
+        fontSize: 20,
+        fontFamily: "Nunito-SemiBold",
+      };
 
+      
+      if (isToday) {
+        textStyle.color = "red";
+      }
+  
       customStyles.push({
-        date: day.toDate(), // Convert moment date to JavaScript Date
+        date: day.toDate(),
         style: {},
-        textStyle: {
-          color: day.day() === 6 ? 'red' : (isHoliday ? 'red' : 'black'), // Red text for Saturdays, red for holiday dates, black for other days
-          fontSize: 20, // Adjust font size
-          fontWeight: isHoliday ? 'bold' : 'normal', // Bold font for holiday dates
-        },
-        containerStyle: [], 
-        allowDisabled: true, 
+        textStyle: textStyle,
+        containerStyle: [],
+        allowDisabled: true,
       });
-      day.add(1, 'day');
+      day.add(1, "day");
     }
 
     setCustomDatesStyles(customStyles);
   };
+
+  const formattedDate = selectedStartDate ? moment(selectedStartDate).format("YYYY-MM-DD") : "";
 
   return (
     <View style={styles.container}>
       <CalendarPicker
         onDateChange={onDateChange}
         customDatesStyles={customDatesStyles}
-        previousTitleStyle={{ color: '#333' }} 
-        nextTitleStyle={{ color: '#333' }} 
-        selectedDayTextStyle={{ color: '#fff' }} 
-        selectedDayStyle={{ backgroundColor: '#007bff' }} 
-        todayTextStyle={{ fontWeight: 'bold', color: 'yellow', fontSize: 20 }} 
-        dayLabelsWrapper={{ backgroundColor: '#f2f2f2' }} 
-        headerWrapperStyle={{ backgroundColor: '#007bff' }} 
+        previousTitleStyle={{ fontFamily:'Nunito-BoldItalic',color:"#1A162B" }}
+        nextTitleStyle={{ fontFamily:'Nunito-BoldItalic',color:"#1A162B" }}
+        selectedDayTextStyle={{ color: "#fff",fontFamily:'Nunito-BoldItalic' }}
+        selectedDayStyle={{ backgroundColor: "#1A162B", }}
+      
+        todayBackgroundColor={'#007bff'}
+        dayLabelsWrapper={{ backgroundColor: "#E2E2E2",borderTopWidth:1,borderBottomWidth:1,borderColor:'#1A162B' }}
+        headerWrapperStyle={{ backgroundColor: "#E2E2E2",}}
+        monthTitleStyle={{fontFamily: 'Nunito-Bold', fontSize: 20 ,color:"#343434"}} // Custom style for month
+        yearTitleStyle={{fontFamily: 'Nunito-Bold', fontSize: 20 ,color:"#343434"}} // Custom style for year
+        customDayHeaderStyles={(dayOfWeek) => {
+          return {
+            style: {
+              backgroundColor: "#E2E2E2",
+              
+            },
+            textStyle: {
+              color:'#3a224d', 
+              fontFamily: 'Nunito-BoldItalic',
+              fontSize: 16,
+            },
+          };
+        }}
       />
 
-     
-      <SelectDay date={selectedStartDate} />
+      <SelectDay date={formattedDate} />
     </View>
   );
 };
@@ -99,14 +101,8 @@ const Notification = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
-    marginTop: 100,
+    backgroundColor: "#E2E2E2",
   },
-  selectedDateText: {
-    fontSize: 22, 
-    fontWeight: 'bold',
-    marginTop: 20,
-  }
 });
 
-export default Notification;
+export default CalendarComponent;

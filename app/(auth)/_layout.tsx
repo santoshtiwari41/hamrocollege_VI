@@ -5,8 +5,6 @@ export default function AuthLayout() {
  
   return (
     <>
-    <StatusBar style="auto" backgroundColor={Colors.background} />
-    
     <Stack screenOptions={{
       headerShown:false,
        contentStyle: {
@@ -15,7 +13,8 @@ export default function AuthLayout() {
      }}
     >
       <Stack.Screen name="login" options={{ headerShown: false }} />
-      <Stack.Screen name="signup" options={{ headerShown: false }} />
+     
+      <Stack.Screen name="forgotPassword" options={{ headerShown: false }} />
     </Stack>
     </>
   );
