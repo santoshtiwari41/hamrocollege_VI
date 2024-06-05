@@ -15,7 +15,7 @@ export default UniversityNotification
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#E2E2E2',
+      backgroundColor: 'green',
       alignItems: 'center',
       justifyContent: 'center',
       width:hp('100%'),

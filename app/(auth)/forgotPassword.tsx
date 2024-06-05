@@ -13,6 +13,7 @@ import ForgotPasswordImage from "@/data/ForgotPasswordImage";
 import { useRouter } from "expo-router";
 import Button from "@/components/Button";
 import InputField from "@/components/InputField";
+import Animated from 'react-native-reanimated'
 
 import {
   widthPercentageToDP as wp,
@@ -35,7 +36,9 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView
+    <Animated.View style={{flex:1,backgroundColor: '#E2E2E2'}}
+    >
+      <KeyboardAvoidingView
       enabled
       keyboardVerticalOffset={200}
       style={{ flex: 1 }}
@@ -48,6 +51,7 @@ const ForgotPassword: React.FC = () => {
           gap: hp("3%"),
           marginTop:hp("-18%"),
         }}
+        
       >
          
 
@@ -58,7 +62,7 @@ const ForgotPassword: React.FC = () => {
           </TouchableOpacity>
         
         <Text style={styles.title}>Reset your password</Text>
-        <ForgotPasswordImage />
+        <ForgotPasswordImage  />
 
         </View>
        
@@ -74,6 +78,8 @@ const ForgotPassword: React.FC = () => {
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
+    </Animated.View>
+    
   );
 };
 

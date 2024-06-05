@@ -1,8 +1,11 @@
+import 'react-native-get-random-values'
 import { Stack } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-
+import { Provider } from 'react-redux';
+import store from '@/redux/store'; 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const fetchFonts = async () => {
   await Font.loadAsync({
     'Nunito-Black': require('@/assets/fonts/Nunito-Black.ttf'),
@@ -27,6 +30,8 @@ const fetchFonts = async () => {
 };
 
 export default function Layout() {
+  const queryClient = new QueryClient();
+
   const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
@@ -50,8 +55,13 @@ export default function Layout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Provider store={store}>
+     <QueryClientProvider client={queryClient}>
+     <Stack screenOptions={{ headerShown: false }}>
     
     </Stack>
+    </QueryClientProvider>
+    </Provider>
+    
   );
 }

@@ -1,42 +1,40 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Dimensions } from "react-native";
+import { StyleSheet, View, Text, Dimensions } from "react-native";
 import SegmentedControlTab from "react-native-segmented-control-tab";
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-
+import { GestureHandlerRootView, PanGestureHandler, State } from "react-native-gesture-handler";
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 import ClassNotification from "@/components/notifications/ClassNotification";
 import UniversityNotification from "@/components/notifications/UniversityNotification";
 import CollegeNotification from "@/components/notifications/CollegeNotification";
-import {
-  GestureHandlerRootView,
-  PanGestureHandler,
-  State,
-} from "react-native-gesture-handler";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from "react-native-reanimated";
-
 const { width } = Dimensions.get("window");
 
 const Notification: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const translateX = useSharedValue(0);
+  const indicatorTranslateX = useSharedValue(0);
 
   const handleIndexChange = (index: number) => {
     setSelectedIndex(index);
-    translateX.value = withSpring(index * (width / 3));
+    translateX.value = withSpring(-width * index);
+    indicatorTranslateX.value = withSpring((width / 3) * index);
   };
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const animatedContentStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: translateX.value }],
     };
   });
 
+  const animatedIndicatorStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: indicatorTranslateX.value }],
+    };
+  });
+
   const onGestureEvent = (event: any) => {
     const { translationX } = event.nativeEvent;
-    translateX.value = selectedIndex * (width / 3) + translationX / 3;
+    translateX.value = -width * selectedIndex + translationX;
+    indicatorTranslateX.value = (width / 3) * selectedIndex + translationX / 3;
   };
 
   const onHandlerStateChange = (event: any) => {
@@ -47,7 +45,8 @@ const Notification: React.FC = () => {
       } else if (translationX < -50 && selectedIndex < 2) {
         handleIndexChange(selectedIndex + 1);
       } else {
-        translateX.value = withSpring(selectedIndex * (width / 3));
+        translateX.value = withSpring(-width * selectedIndex);
+        indicatorTranslateX.value = withSpring((width / 3) * selectedIndex);
       }
     }
   };
@@ -65,16 +64,16 @@ const Notification: React.FC = () => {
           tabTextStyle={styles.tabTextStyle}
           activeTabTextStyle={styles.activeTabTextStyle}
         />
-        <Animated.View style={[styles.indicator, animatedStyle]} />
+        <Animated.View style={[styles.indicator, animatedIndicatorStyle]} />
       </View>
       <PanGestureHandler
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
       >
-        <Animated.View style={styles.content}>
-          {selectedIndex === 0 && <ClassNotification />}
-          {selectedIndex === 1 && <CollegeNotification />}
-          {selectedIndex === 2 && <UniversityNotification />}
+        <Animated.View style={[styles.content, animatedContentStyle]}>
+          <ClassNotification />
+         <CollegeNotification />
+          <UniversityNotification />
         </Animated.View>
       </PanGestureHandler>
     </GestureHandlerRootView>
@@ -85,32 +84,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 50,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#fff",
   },
   content: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: "row",
+    width: width * 3,
   },
+  
   tabsContainerStyle: {
     height: 50,
-    backgroundColor: "#FFFFFFF",
+    backgroundColor: "#FFFFFF",
   },
   tabStyle: {
     backgroundColor: "#FFFFFF",
     borderColor: 'transparent',
     borderBottomWidth: 2,
-    borderBottomColor: 'black', // Add bottom border color
   },
   tabTextStyle: {
     color: "#000",
     fontSize: 18,
-    fontFamily:'Nunito-Bold'
+    fontFamily: 'Nunito-Bold'
   },
   activeTabStyle: {
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 2,
-    borderBottomColor: '#DD486E', 
+    borderBottomColor: '#DD486E',
   },
   activeTabTextStyle: {
     color: "#000000",

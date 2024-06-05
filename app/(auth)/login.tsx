@@ -18,6 +18,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import Animated from 'react-native-reanimated'
+import { StatusBar } from 'expo-status-bar';
 
 interface LogInProps {}
 
@@ -43,7 +45,10 @@ const LogIn: React.FC<LogInProps> = () => {
   };
 
   return (
-    <KeyboardAvoidingView
+    <Animated.View style={{flex:1,backgroundColor:'#E2E2E2'}}
+   >
+     <StatusBar style="dark" />
+       <KeyboardAvoidingView
       enabled
       keyboardVerticalOffset={200}
       style={{ flex: 1 }}
@@ -56,6 +61,7 @@ const LogIn: React.FC<LogInProps> = () => {
           gap: hp("4%"),
           marginTop:hp("-14%"),
         }}
+        
       >
         <View
           style={{
@@ -105,15 +111,13 @@ const LogIn: React.FC<LogInProps> = () => {
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
+    </Animated.View>
+   
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "#E2E2E2",
-  },
+  
   title: {
     fontSize: 24,
     fontFamily:'Nunito-ExtraBold'

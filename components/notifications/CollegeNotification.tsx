@@ -15,7 +15,7 @@ export default CollegeNotification
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        backgroundColor: '#E2E2E2',
+        backgroundColor: 'yellow',
         alignItems: 'center',
         justifyContent: 'center',
         width:hp('100%'),
