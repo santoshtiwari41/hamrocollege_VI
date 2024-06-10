@@ -29,6 +29,10 @@ const LogIn: React.FC<LogInProps> = () => {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const router = useRouter();
   const handleLogin = () => {
+  if(username=='santosh201341' && password=='santosh@123')
+    {
+      router.push('./(app)/home')
+    }
     if (username && password) {
       console.log(username + " " + password);
     } else {

@@ -31,8 +31,7 @@ const ForgotPassword: React.FC = () => {
   };
 
   const sentMail = () => {
-   console.log('continued')
-   console.log(email)
+  router.push('./otp')
   };
 
   return (

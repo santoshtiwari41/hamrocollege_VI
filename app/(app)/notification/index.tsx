@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 50,
-    backgroundColor: "#fff",
+    backgroundColor: "#E2E2E2",
   },
   content: {
     flex: 1,
@@ -94,10 +94,10 @@ const styles = StyleSheet.create({
   
   tabsContainerStyle: {
     height: 50,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#E2E2E2",
   },
   tabStyle: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#E2E2E2",
     borderColor: 'transparent',
     borderBottomWidth: 2,
   },
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito-Bold'
   },
   activeTabStyle: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#E2E2E2   ',
     borderBottomWidth: 2,
     borderBottomColor: '#DD486E',
   },

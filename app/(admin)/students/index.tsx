@@ -56,7 +56,7 @@ const AdminRegisterStudent: React.FC = () => {
 
   return (
     <>
-    <StatusBar style='dark'/>
+    <StatusBar style='dark' backgroundColor='white'/>
      <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Register New Student</Text>
       
@@ -126,7 +126,6 @@ const AdminRegisterStudent: React.FC = () => {
       </TouchableOpacity>
     </ScrollView>
     </>
-   
   );
 };
 
@@ -137,7 +136,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E2E2E2',
     alignItems: 'center',
     gap: hp('4%'),
-    paddingTop: 60
+    paddingTop: 20
   },
   title: {
     fontSize: 24,

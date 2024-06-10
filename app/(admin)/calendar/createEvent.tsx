@@ -47,7 +47,7 @@ const EventCreate: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add Batch Event</Text>
+      <Text style={styles.title}>Add new Event</Text>
       <InputField placeholder="Title"
         value={title}
         onChangeText={setTitle}/>
@@ -88,10 +88,9 @@ const EventCreate: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    
     backgroundColor: '#E2E2E2',
     alignItems:'center',
-    paddingTop:hp('15%'),
+    paddingTop:hp('7%'),
     gap:20
     
   },

@@ -9,7 +9,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 export default function TabLayout() {
   return (
     <>
-      <StatusBar style="auto" backgroundColor="black" />
+      <StatusBar style="dark" backgroundColor="#E2E2E2" />
       <Tabs
         screenOptions={({ route }) => ({
           tabBarActiveTintColor: '#DDDDDD',
@@ -28,7 +28,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="notification/index"
+          name="notification"
           options={{
             title: 'Notification',
             tabBarIcon: ({ color }) => <Feather size={24} name="bell" color={color} />,
@@ -42,7 +42,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="profile/index"
+          name="profile"
           options={{
             title: 'Profile',
             tabBarIcon: ({ color }) => <Feather size={24} name="user" color={color} />,
