@@ -4,16 +4,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useQuery } from '@tanstack/react-query';
-import { fetchUsers,User } from '@/services/api';
 import { ScheduledNotification } from '@/redux/notificationSlice';
 
 const NotificationScreen: React.FC = () => {
-  const { isLoading, error, data } = useQuery<User[]>({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
-  });
-  console.log(data)
   const router = useRouter();
   const scheduledNotifications = useSelector((state: RootState) => state.notifications.scheduledNotifications);
 
@@ -27,9 +20,6 @@ const NotificationScreen: React.FC = () => {
       <Text style={styles.notificationDate}>{new Date(item.scheduledDate).toLocaleString()}</Text>
     </View>
   );
-  if (isLoading) return <ActivityIndicator size="large" color="#0000ff" />;
-  if (error instanceof Error) return <Text>Error: {error.message}</Text>;
- 
   return (
     <View style={styles.container}>
      

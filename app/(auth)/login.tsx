@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
 import { Ionicons, Fontisto } from "@expo/vector-icons";
 import LoginImage from "@/data/LoginImage";
@@ -20,24 +21,35 @@ import {
 } from "react-native-responsive-screen";
 import Animated from 'react-native-reanimated'
 import { StatusBar } from 'expo-status-bar';
+import { useMutation } from "@tanstack/react-query";
+import { studentLogin } from "@/services/api";
 
 interface LogInProps {}
 
 const LogIn: React.FC<LogInProps> = () => {
-  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [rememberMe, setRememberMe] = useState<boolean>(false);
+
   const router = useRouter();
+
+  const loginMutation=useMutation({
+    mutationFn: studentLogin,
+  })
   const handleLogin = () => {
-  if(username=='santosh201341' && password=='santosh@123')
+  if(email=='user' && password=='user@123')
     {
-      router.push('./(app)/home')
+      router.push('/(app)/home')
     }
-    if (username && password) {
-      console.log(username + " " + password);
-    } else {
-      console.log("invalid username or password");
-    }
+    if(email=='admin' && password=='admin@123')
+      {
+        router.push('/(admin)/students')
+      }
+    const res=loginMutation.mutate({
+        email,
+        password
+      });
+      console.log(res)
   };
 
   const handleForgotPassword = () => {
@@ -47,6 +59,17 @@ const LogIn: React.FC<LogInProps> = () => {
   const toggleRememberMe = () => {
     setRememberMe(!rememberMe);
   };
+  if(loginMutation.isPending) {
+    return <Text>Loading...</Text>
+  }
+  if(loginMutation.isError) {
+    // return <Text>{loginMutation.error.message}</Text>
+    console.log(loginMutation.error.message)
+  }
+  if(loginMutation.isSuccess) {
+    Alert.alert('Success', 'Student Registered Successfully');
+   
+  }
 
   return (
     <Animated.View style={{flex:1,backgroundColor:'#E2E2E2'}}
@@ -80,9 +103,9 @@ const LogIn: React.FC<LogInProps> = () => {
 
         <InputField
           icon="mail"
-          placeholder="Enter username or  Email"
-          value={username}
-          onChangeText={setUsername}
+          placeholder="Enter  Email"
+          value={email}
+          onChangeText={setEmail}
         />
 
         <PasswordField

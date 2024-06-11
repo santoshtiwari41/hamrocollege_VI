@@ -4,8 +4,16 @@ import CalendarPicker, { DateChangedCallback } from "react-native-calendar-picke
 import moment from "moment";
 import SelectDay from "@/components/selectDay";
 import { events } from "@/data/event";
+import { QueryClient, useQuery } from "@tanstack/react-query";
+import { receiveCaledarEvent } from "@/services/api";
 
 const CalendarComponent = () => {
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ['calendarkey'],
+    queryFn: receiveCaledarEvent,
+  })
+
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [customDatesStyles, setCustomDatesStyles] = useState<any[]>([]);
 
@@ -62,6 +70,13 @@ const CalendarComponent = () => {
   };
 
   const formattedDate = selectedStartDate ? moment(selectedStartDate).format("YYYY-MM-DD") : "";
+
+  if (isPending){
+     return 'Loading...'
+  }
+
+  if (error) 
+    return 'An error has occurred: ' + error.message
 
   return (
     <View style={styles.container}>

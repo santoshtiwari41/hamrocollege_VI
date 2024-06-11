@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { addScheduledNotification } from "@/redux/notificationSlice";
@@ -16,6 +17,8 @@ import * as ImagePicker from "expo-image-picker";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { FontAwesome } from '@expo/vector-icons'; 
  import { ScheduledNotification } from "@/redux/notificationSlice";
+import { useMutation } from "@tanstack/react-query";
+import { sendNotification } from "@/services/api";
 
 const AddNotificationScreen: React.FC = () => {
  
@@ -28,7 +31,10 @@ const AddNotificationScreen: React.FC = () => {
 
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
+  
+  const notificationMutation=useMutation({
+    mutationFn: sendNotification,
+  })
   const addNotification = () => {
     const newNotification: ScheduledNotification = {
       id: uuidv4(),
@@ -39,12 +45,19 @@ const AddNotificationScreen: React.FC = () => {
     };
 
     dispatch(addScheduledNotification(newNotification));
-    navigation.goBack();
-
+ 
     setTitle("");
     setDescription("");
     setScheduledDate(new Date().toISOString());
     setImageUri("");
+     const res=notificationMutation.mutate({
+      title,
+      description,
+      scheduledDate,
+      imageUri: imageUri || "",
+    });
+    console.log(res+"dddd");
+    navigation.goBack();
   };
 
   const selectImage = async () => {
@@ -64,6 +77,19 @@ const AddNotificationScreen: React.FC = () => {
       setImageUri(result.assets[0].uri);
     }
   };
+
+  if(notificationMutation.isPending) {
+    return <Text>Loading...</Text>
+  
+  }
+  if(notificationMutation.isError) {
+    // return <Text>{loginMutation.error.message}</Text>
+    console.log(notificationMutation.error.message)
+  }
+  if(notificationMutation.isSuccess) {
+    Alert.alert('Success', 'Student Registered Successfully');
+   
+  }
 
   return (
     <View style={styles.container}>
