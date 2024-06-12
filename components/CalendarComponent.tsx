@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import CalendarPicker, { DateChangedCallback } from "react-native-calendar-picker";
 import moment from "moment";
 import SelectDay from "@/components/selectDay";
@@ -8,7 +8,6 @@ import { QueryClient, useQuery } from "@tanstack/react-query";
 import { receiveCaledarEvent } from "@/services/api";
 
 const CalendarComponent = () => {
-
   const { isPending, error, data } = useQuery({
     queryKey: ['calendarkey'],
     queryFn: receiveCaledarEvent,
@@ -19,7 +18,6 @@ const CalendarComponent = () => {
 
   const onDateChange: DateChangedCallback = (date: Date) => {
     setSelectedStartDate(date);
-   
   };
 
   useEffect(() => {
@@ -51,11 +49,10 @@ const CalendarComponent = () => {
         fontFamily: "Nunito-SemiBold",
       };
 
-      
       if (isToday) {
         textStyle.color = "red";
       }
-  
+
       customStyles.push({
         date: day.toDate(),
         style: {},
@@ -72,11 +69,12 @@ const CalendarComponent = () => {
   const formattedDate = selectedStartDate ? moment(selectedStartDate).format("YYYY-MM-DD") : "";
 
   if (isPending){
-     return 'Loading...'
+    return <Text>Loading...</Text>;
   }
 
-  if (error) 
-    return 'An error has occurred: ' + error.message
+  if (error) {
+    return <Text>An error has occurred: {error.message}</Text>;
+  }
 
   return (
     <View style={styles.container}>
@@ -87,7 +85,6 @@ const CalendarComponent = () => {
         nextTitleStyle={{ fontFamily:'Nunito-BoldItalic',color:"#1A162B" }}
         selectedDayTextStyle={{ color: "#fff",fontFamily:'Nunito-BoldItalic' }}
         selectedDayStyle={{ backgroundColor: "#1A162B", }}
-      
         todayBackgroundColor={'#007bff'}
         dayLabelsWrapper={{ backgroundColor: "#E2E2E2",borderTopWidth:1,borderBottomWidth:1,borderColor:'#1A162B' }}
         headerWrapperStyle={{ backgroundColor: "#E2E2E2",}}
@@ -97,7 +94,6 @@ const CalendarComponent = () => {
           return {
             style: {
               backgroundColor: "#E2E2E2",
-              
             },
             textStyle: {
               color:'#3a224d', 

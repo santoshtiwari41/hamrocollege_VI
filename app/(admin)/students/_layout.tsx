@@ -7,13 +7,12 @@ export default function Layout() {
         headerStyle: {
           backgroundColor: '#f4511e',
         },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
+       headerShown:false
       }}>
      
       <Stack.Screen name="index" options={{headerShown:false}} />
+      
+      <Stack.Screen name="[register]" options={{headerShown:false}} />
       
     </Stack>
   );

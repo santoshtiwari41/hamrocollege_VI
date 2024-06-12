@@ -19,10 +19,15 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { useMutation } from "@tanstack/react-query";
+import { getOtp } from "@/services/api";
 
 
 
 const ForgotPassword: React.FC = () => {
+  const otpMutation = useMutation({
+    mutationFn: getOtp,
+  });
   const [email, setEmail] = useState<string>("");
   
   const router = useRouter();
@@ -31,8 +36,17 @@ const ForgotPassword: React.FC = () => {
   };
 
   const sentMail = () => {
-  router.push('./otp')
+    otpMutation.mutate({
+      email,
+      });
+  
   };
+if(otpMutation.error){
+  console.log(otpMutation.error.message)
+}
+if(otpMutation.isSuccess){
+  router.push('./otp')
+}
 
   return (
     <Animated.View style={{flex:1,backgroundColor: '#E2E2E2'}}

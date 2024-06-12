@@ -1,15 +1,11 @@
 import axios from 'axios';
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-}
 export interface StudentData {
   name: string;
   email: string;
-  department: string;
-  batch: string;
+  phone: string;
+  batchId: string | undefined;
+  
 }
 export interface Credentials{
   email: string;
@@ -28,26 +24,30 @@ export interface Calendar{
   description: string;
   isHoliday:boolean
 }
-
-const api = axios.create({
-  baseURL: 'http://apiUrl',
-});
-
-export const fetchUsers = async (): Promise<User[]> => {
-  const { data } = await axios.get<User[]>('https://jsonplaceholder.typicode.com/users');
-  return data;
-};
-export const notifiation=async():Promise<User[]>=>{
-    const{data}=await axios.get('https://jsonplaceholder.typicode.com/notification')
-    return data
+interface Batch{
+  name: string;
+  startYear: number;
+  endYear: number;
+  departmentId: number;
 }
 
+interface Otp{
+  email: string;
+}
+
+const api = axios.create({
+  baseURL: 'http://192.168.1.3:4000',
+});
+
+
+
+
 export const studentRegister= async (studentData:StudentData) => {
-  return await api.post('/api/register', studentData)
+  return await api.post('/admin/student/register', studentData)
 }
 
 export const studentLogin= async(credentials:Credentials) => {
-  return await api.post('/api/login', credentials)
+  return await api.post('/auth/student/login', credentials)
 }
 
 export const sendNotification=async (notification:Notification) => {
@@ -61,4 +61,14 @@ export const sendCalendarEvent= async (calendar:Calendar) => {
 export const receiveCaledarEvent= async() => {
   const{data}=await axios.get('/api/calendar')
   return data
+}
+export const createBatch= async(batch:Batch) => {
+  return await api.post('/batchs', batch)
+}
+export const getBatchs= async() => {
+  return await api.get('/batchs')
+}
+
+export const getOtp= async(otp:Otp) => {
+  return await api.post('/auth/otp', otp)
 }

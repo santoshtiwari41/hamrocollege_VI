@@ -19,8 +19,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import Animated from 'react-native-reanimated'
-import { StatusBar } from 'expo-status-bar';
+import Animated from "react-native-reanimated";
+import { StatusBar } from "expo-status-bar";
 import { useMutation } from "@tanstack/react-query";
 import { studentLogin } from "@/services/api";
 
@@ -32,26 +32,6 @@ const LogIn: React.FC<LogInProps> = () => {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
 
   const router = useRouter();
-
-  const loginMutation=useMutation({
-    mutationFn: studentLogin,
-  })
-  const handleLogin = () => {
-  if(email=='user' && password=='user@123')
-    {
-      router.push('/(app)/home')
-    }
-    if(email=='admin' && password=='admin@123')
-      {
-        router.push('/(admin)/students')
-      }
-    const res=loginMutation.mutate({
-        email,
-        password
-      });
-      console.log(res)
-  };
-
   const handleForgotPassword = () => {
     router.push("/forgotPassword");
   };
@@ -59,95 +39,106 @@ const LogIn: React.FC<LogInProps> = () => {
   const toggleRememberMe = () => {
     setRememberMe(!rememberMe);
   };
-  if(loginMutation.isPending) {
-    return <Text>Loading...</Text>
-  }
-  if(loginMutation.isError) {
-    // return <Text>{loginMutation.error.message}</Text>
-    console.log(loginMutation.error.message)
-  }
-  if(loginMutation.isSuccess) {
-    Alert.alert('Success', 'Student Registered Successfully');
+  const loginMutation = useMutation({
+    mutationFn: studentLogin,
+  });
+  const handleLogin = () => {
+    if (email == "user" && password == "user@123") {
+      router.push("/(app)/home");
+    }
+    if (email == "admin" && password == "admin@123") {
+      router.push("/(admin)/students");
+    } else {
+      const res = loginMutation.mutate({
+      email,
+      password,
+      });
+      console.log(res);
+    }
+
    
-  }
+    if (loginMutation.isPending) {
+      return <Text>Loading...</Text>;
+    }
+    if (loginMutation.isError) {
+     
+      console.log(loginMutation.error.message);
+    }
+  };
 
   return (
-    <Animated.View style={{flex:1,backgroundColor:'#E2E2E2'}}
-   >
-     <StatusBar style="dark" />
-       <KeyboardAvoidingView
-      enabled
-      keyboardVerticalOffset={200}
-      style={{ flex: 1 }}
-    >
-      <View
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          gap: hp("4%"),
-          marginTop:hp("-14%"),
-        }}
-        
+    <Animated.View style={{ flex: 1, backgroundColor: "#E2E2E2" }}>
+      <StatusBar style="dark" />
+      <KeyboardAvoidingView
+        enabled
+        keyboardVerticalOffset={200}
+        style={{ flex: 1 }}
       >
         <View
           style={{
+            flex: 1,
             alignItems: "center",
-            marginBottom:hp('1%'),
-            gap:hp('4%')
+            justifyContent: "center",
+            gap: hp("4%"),
+            marginTop: hp("-14%"),
           }}
         >
-          <Text style={styles.title}>Welcome to Hamro College!</Text>
-          <LoginImage />
-        </View>
-
-        <InputField
-          icon="mail"
-          placeholder="Enter  Email"
-          value={email}
-          onChangeText={setEmail}
-        />
-
-        <PasswordField
-          icon="key"
-          placeholder="Enter Password"
-          value={password}
-          onChangeText={setPassword}
-        />
-
-        <View style={styles.row}>
-          <View style={styles.rememberMeContainer}>
-            <TouchableOpacity onPress={toggleRememberMe}>
-              <Fontisto
-                name={rememberMe ? "checkbox-active" : "checkbox-passive"}
-                size={20}
-                color={rememberMe ? "#1A162B" : "black"}
-              />
-            </TouchableOpacity>
-            <Text style={styles.rememberMeText}>Remember Me</Text>
+          <View
+            style={{
+              alignItems: "center",
+              marginBottom: hp("1%"),
+              gap: hp("4%"),
+            }}
+          >
+            <Text style={styles.title}>Welcome to Hamro College!</Text>
+            <LoginImage />
           </View>
-          <TouchableOpacity onPress={handleForgotPassword}>
-            <Text style={styles.forgotPasswordButtonText}>
-              Forgot Password?
-            </Text>
+
+          <InputField
+            icon="mail"
+            placeholder="Enter  Email"
+            value={email}
+            onChangeText={setEmail}
+          />
+
+          <PasswordField
+            icon="key"
+            placeholder="Enter Password"
+            value={password}
+            onChangeText={setPassword}
+          />
+
+          <View style={styles.row}>
+            <View style={styles.rememberMeContainer}>
+              <TouchableOpacity onPress={toggleRememberMe}>
+                <Fontisto
+                  name={rememberMe ? "checkbox-active" : "checkbox-passive"}
+                  size={20}
+                  color={rememberMe ? "#1A162B" : "black"}
+                />
+              </TouchableOpacity>
+              <Text style={styles.rememberMeText}>Remember Me</Text>
+            </View>
+            <TouchableOpacity onPress={handleForgotPassword}>
+              <Text style={styles.forgotPasswordButtonText}>
+                Forgot Password?
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity onPress={handleLogin}>
+            <Button title="Log In" />
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity onPress={handleLogin}>
-          <Button title="Log In" />
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
     </Animated.View>
-   
   );
 };
 
 const styles = StyleSheet.create({
-  
   title: {
     fontSize: 24,
-    fontFamily:'Nunito-ExtraBold'
+    fontFamily: "Nunito-ExtraBold",
   },
 
   row: {
@@ -161,13 +152,13 @@ const styles = StyleSheet.create({
   },
   rememberMeText: {
     fontSize: 14.5,
-    fontFamily:'Nunito-BoldItalic'
+    fontFamily: "Nunito-BoldItalic",
   },
   forgotPasswordButtonText: {
     color: "#1A162B",
     textDecorationLine: "underline",
     fontSize: 14.5,
-    fontFamily:'Nunito-ExtraBoldItalic'
+    fontFamily: "Nunito-ExtraBoldItalic",
   },
 });
 

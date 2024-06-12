@@ -1,148 +1,147 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
-import { Ionicons } from '@expo/vector-icons';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import InputField from '@/components/InputField';
-import Button from '@/components/Button';
-import { StatusBar } from 'expo-status-bar';
-import { useMutation } from '@tanstack/react-query';
-import { studentRegister } from '@/services/api';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { useQuery } from '@tanstack/react-query';
+import { getBatchs } from '@/services/api';
+import { Entypo } from '@expo/vector-icons'; // Import the Entypo icon library
+import { useRouter } from 'expo-router';
 
-
-interface Student {
+interface Batch {
+  id: number;
   name: string;
-  email: string;
-  department: string;
-  batch: string;
-  password: string;
+  startYear: number;
+  endYear: number;
+  departmentId: number;
 }
 
-const AdminRegisterStudent: React.FC = () => {
-  const [name, setName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [department, setDepartment] = useState<string>('');
-  const [batch, setBatch] = useState<string>('');
-  const [departmentSelected, setDepartmentSelected] = useState<boolean>(false);
+const departmentNames: { [key: number]: string } = {
+  1: 'Civil',
+  2: 'IT',
+  3: 'Computer',
+  4: 'Software',
+};
 
-  const registerMutation=useMutation({
-    mutationFn: studentRegister,
-  })
+const DepartmentScreen: React.FC = () => {
+    const router = useRouter();
+    const navigation = useNavigation();
+    const { isLoading, error, data } = useQuery({
+        queryKey: ['batchData'],
+        queryFn: getBatchs
+    });
+ 
+    const [selectedDepartmentIndex, setSelectedDepartmentIndex] = useState<number>(0);
 
-  const handleRegisterStudent = () => {
-    if (!name || !email || !batch || !department) {
-      Alert.alert('Error', 'Please fill in all fields.');
-      return;
+    const handleBatchClick = (batch: Batch) => {
+        console.log('navigate');
+   
+        router.push({
+            pathname: `/students/${batch.id}`, 
+            params: { batchId: batch.id },
+        });
+    };
+
+    const handleAddBatchClick = () => {
+        
+        router.push('/students/addBatch');
+    };
+
+    const departments = Object.keys(departmentNames).map(Number);
+    const selectedDepartmentId = departments[selectedDepartmentIndex];
+
+   
+    const responseData = data?.data;
+    const filteredBatches = responseData?.filter((batch: Batch) => batch.departmentId === selectedDepartmentId) || [];
+
+    if (isLoading) {
+        return <Text>Loading...</Text>;
     }
 
-    registerMutation.mutate({
-      name,
-      email,
-      department,
-      batch,
-    });
-    resetForm();
-  };
+    if (error) {
+        return <Text>{error.message}</Text>;
+    }
 
-  const resetForm = () => {
-    setName('');
-    setEmail('');
-    setDepartment('');
-    setBatch('');
-    setDepartmentSelected(false);
-  };
-  if(registerMutation.isPending) {
-    return <Text>Loading...</Text>
-  }
-  if(registerMutation.isError) {
-    return <Text>{registerMutation.error.message}</Text>
-  }
-  if(registerMutation.isSuccess) {
-    Alert.alert('Success', 'Student Registered Successfully');
-    resetForm();
-  }
-
-  return (
-    <>
-      <StatusBar style="dark" backgroundColor="white" />
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Register New Student</Text>
-        <InputField icon="person" placeholder="Name" value={name} onChangeText={setName} />
-        <InputField icon="mail" placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-        <InputField icon="school" placeholder="Batch" value={batch} onChangeText={setBatch} />
-        
-        <View style={styles.pickerWrapper}>
-          <Ionicons name="business" size={24} color="black" style={styles.pickerIcon} />
-          <View style={styles.pickerContainer}>
-            <RNPickerSelect
-              onValueChange={(value) => {
-                setDepartment(value);
-                setDepartmentSelected(true);
-              }}
-              items={[
-                { label: 'Computer', value: 'Computer' },
-                { label: 'Civil', value: 'Civil' },
-                { label: 'Electronics', value: 'Electronics' },
-                { label: 'BCA', value: 'BCA' },
-                { label: 'IT', value: 'IT' },
-                { label: 'Software', value: 'Software' },
-              ]}
-              style={{
-                placeholder: {
-                  color: '#999',
-                  fontFamily: 'Nunito-SemiBold',
-                  fontSize: 16,
-                },
-              }}
-              placeholder={{
-                label: 'Choose Department',
-                value: '',
-              }}
+    return (
+        <View style={styles.container}>
+           <TouchableOpacity style={styles.addButton} onPress={handleAddBatchClick}>
+                <Entypo name="plus" size={24} color="black" />
+                <Text style={styles.addButtonText}>Add Batch</Text>
+            </TouchableOpacity>
+            <SegmentedControl
+                values={Object.values(departmentNames)}
+                selectedIndex={selectedDepartmentIndex}
+                onChange={(event) => setSelectedDepartmentIndex(event.nativeEvent.selectedSegmentIndex)}
+                style={styles.segmentedControl}
+                tintColor="#007AFF"
+                fontStyle={{ fontWeight: '500' }}
+                activeFontStyle={{ fontWeight: '700', color: '#fff' }}
             />
-          </View>
+           
+            <ScrollView style={styles.scrollContainer}>
+                {filteredBatches.map((batch: Batch) => (
+                    <TouchableOpacity
+                        key={batch.id}
+                        style={styles.batchItem}
+                        onPress={() => handleBatchClick(batch)}
+                    >
+                        <Text style={styles.batchText}>{batch.name}</Text>
+                        <Text style={styles.batchYears}>{batch.startYear} - {batch.endYear}</Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
         </View>
-        <TouchableOpacity onPress={handleRegisterStudent} style={{alignItems:'center'}}>
-        <Button title="Add new student"  />
-     
-        </TouchableOpacity>
-         </ScrollView>
-    </>
-  );
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: '#E2E2E2',
-    alignItems: 'center',
-    gap: hp('4%'),
-    paddingTop: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#333',
-    fontFamily: 'Nunito-ExtraBold',
-  },
-  pickerWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderColor: '#1A162B',
-    borderWidth: 1,
-    borderRadius: 10,
-    backgroundColor: '#E2E2E2',
-    paddingLeft: 10,
-    height: hp('6%'),
-    width: wp('90%'),
-  },
-  pickerIcon: {
-    marginRight: 10,
-  },
-  pickerContainer: {
-    flex: 1,
-  },
+    container: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: '#F5F5F5',
+    },
+    segmentedControl: {
+        marginBottom: 20,
+        backgroundColor: '#F0F0F0',
+        borderRadius: 8,
+        padding: 5,
+    },
+    scrollContainer: {
+        flex: 1,
+    },
+    batchItem: {
+        padding: 15,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        marginBottom: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    batchText: {
+        fontSize: 18,
+        color: '#333',
+        fontWeight: 'bold',
+    },
+    batchYears: {
+        fontSize: 14,
+        color: '#888',
+        marginTop: 5,
+    },
+    addButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    addButtonText: {
+        marginLeft: 10,
+        fontSize: 18,
+        color: '#333',
+    },
 });
 
-export default AdminRegisterStudent;
+export default DepartmentScreen;
