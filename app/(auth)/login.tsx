@@ -17,7 +17,7 @@ import Animated from "react-native-reanimated";
 import { StatusBar } from "expo-status-bar";
 import { useMutation } from "@tanstack/react-query";
 import { studentLogin } from "@/services/api";
-import { storeData } from "@/services/asyncStorage";
+import { getUserId, setId, storeData } from "@/services/asyncStorage";
 
 interface LogInProps{}
 const LogIn: React.FC<LogInProps> = () => {
@@ -40,6 +40,7 @@ const LogIn: React.FC<LogInProps> = () => {
       console.log('logged in');
       const value = data.data.accessToken;
       await storeData(value);  // Store token immediately after login
+      await setId(value)
       router.replace('/(app)/home');
     },
     onError: (error) => {

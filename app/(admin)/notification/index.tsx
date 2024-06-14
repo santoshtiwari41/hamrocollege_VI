@@ -74,11 +74,9 @@ const Notification: React.FC = () => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.sendToAll} onPress={handleSendToAll}>
-                <Entypo name="plus" size={24} color="white" />
-                <Text style={styles.sendToAllText}>
-                    Send Notification to All 
-                </Text>
+             <TouchableOpacity style={styles.addButton} onPress={handleSendToAll}>
+                <Entypo name="plus" size={24} color="black" />
+                <Text style={styles.addButtonText}>send to all</Text>
             </TouchableOpacity>
 
             <View style={styles.dropdownContainer}>
@@ -192,7 +190,17 @@ const styles = StyleSheet.create({
     },
     sendToAll:{
       margin:20
-    }
+    },
+    addButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    addButtonText: {
+        marginLeft: 10,
+        fontSize: 18,
+        color: '#333',
+    },
 });
 
 export default Notification;

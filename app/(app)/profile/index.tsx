@@ -1,28 +1,38 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, Text, Image, ActivityIndicator } from 'react-native';
 import { Title, Caption, Divider, Button } from 'react-native-paper';
-import * as ImagePicker from "expo-image-picker";
+import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome } from '@expo/vector-icons'; 
 import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
-import { logout } from '@/redux/authSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { removeData } from '@/services/asyncStorage';
-
-const studentProfile = {
-  username: '@santosh.201341',
-  name: 'santosh tiwari',
-  roll: '201341',
-  batch: '2020',
-  email: 'santosh.201341@ncit.edu.np',
-  department: 'computer'
-};
+import { getUserId } from '@/services/asyncStorage';
+import { useQuery } from '@tanstack/react-query';
+import { getProfile } from '@/services/api';
 
 const ProfileScreen: React.FC = () => {
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const data = await getUserId();
+      const { id } = JSON.parse(data);
+      console.log('userid: ' + id);
+      setUserId(id);
+    };
+
+    fetchUserId();
+  }, []);
+
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ['profile', userId],
+    queryFn: () => getProfile(userId),
+    enabled: !!userId,
+  });
+
   const router = useRouter();
   const dispatch = useDispatch();
   const [imageUri, setImageUri] = useState<string>("");
-  const [rerender, setRerender] = useState<number>(0); 
 
   const selectImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -33,26 +43,43 @@ const ProfileScreen: React.FC = () => {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,  
+      allowsEditing: true,
       quality: 1,
     });
 
     if (!result.cancelled) {
-      setImageUri(result.assets[0].uri);
+      setImageUri(result.uri);
     }
   };
+
   const handleLogout = async () => {
-    removeData();
-    router.replace('/(auth)/login')
+    await removeData();
+    router.replace('/(auth)/login');
   };
 
-  return ( 
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error fetching profile</Text>
+      </View>
+    );
+  }
+
+  return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={selectImage}>
           <View style={styles.imageContainer}>
             {imageUri ? (
-              <Image key={rerender} source={{ uri: imageUri }} style={styles.image} />
+              <Image key={new Date().getTime()} source={{ uri: imageUri }} style={styles.image} />
             ) : (
               <View style={styles.placeholder}>
                 <FontAwesome name="camera" size={40} color="#FFF" />
@@ -61,8 +88,8 @@ const ProfileScreen: React.FC = () => {
             )}
           </View>
         </TouchableOpacity>
-        <Title style={styles.title}>{studentProfile.name}</Title>
-        <Caption style={styles.caption}>{studentProfile.username}</Caption>
+        <Title style={styles.title}>{data?.name || 'Loading...'}</Title>
+        <Caption style={styles.caption}>{'@' + (data?.email.split('@')[0] || 'username')}</Caption>
       </View>
 
       <Divider style={styles.divider} />
@@ -70,19 +97,23 @@ const ProfileScreen: React.FC = () => {
       <View style={styles.profileInfoSection}>
         <View style={styles.profileInfoRow}>
           <Text style={styles.label}>Student ROLL:</Text>
-          <Text style={styles.value}>{studentProfile.roll}</Text>
+          <Text style={styles.value}>{data?.crn || 'Loading...'}</Text>
         </View>
         <View style={styles.profileInfoRow}>
           <Text style={styles.label}>Email:</Text>
-          <Text style={styles.value}>{studentProfile.email}</Text>
+          <Text style={styles.value}>{data?.email || 'Loading...'}</Text>
         </View>
         <View style={styles.profileInfoRow}>
           <Text style={styles.label}>Department:</Text>
-          <Text style={styles.value}>{studentProfile.department}</Text>
+          <Text style={styles.value}>Computer</Text>
         </View>
         <View style={styles.profileInfoRow}>
           <Text style={styles.label}>Year:</Text>
-          <Text style={styles.value}>{studentProfile.batch}</Text>
+          <Text style={styles.value}>{data?.batch?.startYear} - {data?.batch?.endYear}</Text>
+        </View>
+        <View style={styles.profileInfoRow}>
+          <Text style={styles.label}>Phone:</Text>
+          <Text style={styles.value}>{data?.phone || 'Loading...'}</Text>
         </View>
       </View>
 
@@ -99,7 +130,7 @@ const ProfileScreen: React.FC = () => {
         <Button
           mode="outlined"
           style={styles.button}
-          onPress={() => router.push('./profile/setting')}
+          onPress={() => router.push('/profile/settings')}
         >
           Settings
         </Button>
@@ -138,7 +169,7 @@ const styles = StyleSheet.create({
   divider: {
     marginVertical: 20, 
     width: '100%', 
-    height: 2
+    height: 2,
   },
   profileInfoSection: {
     marginBottom: 20,
@@ -146,7 +177,6 @@ const styles = StyleSheet.create({
   profileInfoRow: {
     flexDirection: 'row',
     marginBottom: 15, 
-   
   },
   label: {
     fontWeight: 'bold',
@@ -181,6 +211,20 @@ const styles = StyleSheet.create({
   placeholderText: {
     color: '#FFF',
     marginTop: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 18,
   },
 });
 

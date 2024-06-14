@@ -37,10 +37,10 @@ export interface AllNotification{
 }
 export interface Calendar{
   title: string;
-  startDate: string;
-  endDate: string;
+  startTime: string;
+  endTime: string;
   description: string;
-  isHoliday:boolean
+  holiday:boolean
 }
 interface Batch{
   name: string;
@@ -73,12 +73,12 @@ export const sendNotification=async (notification:Notification) => {
 }
 
 export const sendCalendarEvent= async (calendar:Calendar) => {
-  return await api.post('/api/calendar', calendar)
+  return await api.post('/events', calendar)
 }
 
 export const receiveCaledarEvent= async() => {
-  const{data}=await axios.get('/api/calendar')
-  return data
+  return await api.get('/events')
+
 }
 export const createBatch= async(batch:Batch) => {
   return await api.post('/batchs', batch)
@@ -102,4 +102,7 @@ export const sendNotificationDepartment= async(notification:DepartmentNotificati
 export const sendNotificationAll= async(notification:AllNotification) => {
   return await api.post('/notifications', notification)
 }
-
+export const getProfile= async(id:string) => {
+  const response = await api.get(`/students/profile?studentId=${id}`);
+  return response.data;
+}

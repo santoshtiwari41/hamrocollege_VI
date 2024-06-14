@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,9 @@ import {
 import { useRouter } from "expo-router";
 import { events } from "@/data/event";
 import { Ionicons } from "@expo/vector-icons";
+import { QueryClient, useQuery } from "@tanstack/react-query";
+import { receiveCaledarEvent } from "@/services/api";
+import { convertEvents } from "@/data/demoe";
 import Animated, {
   scrollTo,
   useAnimatedRef,
@@ -40,6 +43,18 @@ const truncateDescription = (description: string, maxLength: number) => {
 };
 
 const EventList: React.FC = () => {
+  const [events, setEvents] = useState<any[]>([]);
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["calendarkey"],
+    queryFn: receiveCaledarEvent,
+  });
+
+  useEffect(() => {
+    if (data) {
+      setEvents(convertEvents(data.data));
+    }
+  }, [data]);
+
   const animatedRef = useAnimatedRef<Animated.ScrollView>();
   const scrollY = useSharedValue(0);
 

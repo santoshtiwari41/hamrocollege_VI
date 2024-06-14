@@ -1,15 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import JWT from 'expo-jwt';
-
+import{useJwt} from  'react-jwt'
+import { jwtDecode } from "jwt-decode";
 const storeData = async (value: string) => {
   try {
-    const decoded = JWT.decode(value,'shh'); 
-    
+   
   
     await AsyncStorage.setItem('authToken', value);
-    // await AsyncStorage.setItem('userId', userId.toString());
-    console.log('Token and User ID stored successfully:', { token: value, decoded });
-  } catch (e) {
+    
+     } catch (e) {
     console.log('Failed to store the token and user ID:', e);
   }
 };
@@ -24,16 +23,7 @@ const getData = async () => {
   }
 };
 
-const getUserId = async () => {
-  try {
-    const userId = await AsyncStorage.getItem('userId');
-    console.log('User ID retrieved successfully:', userId);
-    return userId;
-  } catch (e) {
-    console.log('Failed to retrieve the user ID:', e);
-    return null;
-  }
-};
+
 
 const removeData = async () => {
   try {
@@ -44,5 +34,29 @@ const removeData = async () => {
     console.log('Failed to remove the token and user ID:', e);
   }
 };
+export const setId = async (value:string) => {
+  try{
+    const decoded = jwtDecode(value);
+    console.log('decodedToken:', decoded)
+    await AsyncStorage.setItem('userId', JSON.stringify(decoded));
+    console.log('decodedToken:', decoded)
+    return decoded
+  }
+  catch(e){
+    console.log('error form async',e)
+  }
+ 
+}
+const getUserId = async () => {
+  try {
+    const value = await AsyncStorage.getItem('userId');
+    console.log('userid retrieved successfully:', value);
+    return value;
+  } catch (e) {
+    console.log('Failed to retrieve the userid:', e);
+    return null;
+  }
+};
+
 
 export { storeData, getData, getUserId, removeData };

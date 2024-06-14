@@ -1,17 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text } from "react-native";
-import CalendarPicker, { DateChangedCallback } from "react-native-calendar-picker";
+import CalendarPicker, {
+  DateChangedCallback,
+} from "react-native-calendar-picker";
 import moment from "moment";
 import SelectDay from "@/components/selectDay";
-import { events } from "@/data/event";
+
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { receiveCaledarEvent } from "@/services/api";
+import { convertEvents } from "@/data/demoe";
 
 const CalendarComponent = () => {
-  const { isPending, error, data } = useQuery({
-    queryKey: ['calendarkey'],
+  const [events, setEvents] = useState<any[]>([]);
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["calendarkey"],
     queryFn: receiveCaledarEvent,
-  })
+  });
+
+  useEffect(() => {
+    if (data) {
+      setEvents(convertEvents(data.data));
+    }
+  }, [data]);
 
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [customDatesStyles, setCustomDatesStyles] = useState<any[]>([]);
@@ -22,7 +32,7 @@ const CalendarComponent = () => {
 
   useEffect(() => {
     generateCustomDatesStyles();
-  }, []);
+  }, [events]); // Re-generate styles when events change
 
   const generateCustomDatesStyles = () => {
     const customStyles = [];
@@ -32,11 +42,13 @@ const CalendarComponent = () => {
     let day = startDate.clone();
 
     while (day.isBefore(endDate)) {
-      const event = events.find((event) => moment(event.date).isSame(day, "day"));
+      const event = events.find((event) =>
+        moment(event.date).isSame(day, "day")
+      );
       const isEventDay = !!event;
       const isHoliday = event ? event.holiday : false;
-      const isSaturday = day.day() === 6; 
-      const isToday = moment().isSame(day, "day")
+      const isSaturday = day.day() === 6;
+      const isToday = moment().isSame(day, "day");
       let textStyle = {
         color: isSaturday
           ? "red"
@@ -66,15 +78,18 @@ const CalendarComponent = () => {
     setCustomDatesStyles(customStyles);
   };
 
-  const formattedDate = selectedStartDate ? moment(selectedStartDate).format("YYYY-MM-DD") : "";
+  const formattedDate = selectedStartDate
+    ? moment(selectedStartDate).format("YYYY-MM-DD")
+    : "";
 
-  if (isPending){
+  if (isLoading) {
     return <Text>Loading...</Text>;
   }
 
   if (error) {
-    // return <Text>An error has occurred: {error.message}</Text>;
-    console.log(error)
+    console.log(error);
+    // Handle error state
+    return <Text>An error occurred: {error.message}</Text>;
   }
 
   return (
@@ -82,23 +97,42 @@ const CalendarComponent = () => {
       <CalendarPicker
         onDateChange={onDateChange}
         customDatesStyles={customDatesStyles}
-        previousTitleStyle={{ fontFamily:'Nunito-BoldItalic',color:"#1A162B" }}
-        nextTitleStyle={{ fontFamily:'Nunito-BoldItalic',color:"#1A162B" }}
-        selectedDayTextStyle={{ color: "#fff",fontFamily:'Nunito-BoldItalic' }}
-        selectedDayStyle={{ backgroundColor: "#1A162B", }}
-        todayBackgroundColor={'#007bff'}
-        dayLabelsWrapper={{ backgroundColor: "#E2E2E2",borderTopWidth:1,borderBottomWidth:1,borderColor:'#1A162B' }}
-        headerWrapperStyle={{ backgroundColor: "#E2E2E2",}}
-        monthTitleStyle={{fontFamily: 'Nunito-Bold', fontSize: 20 ,color:"#343434"}} // Custom style for month
-        yearTitleStyle={{fontFamily: 'Nunito-Bold', fontSize: 20 ,color:"#343434"}} // Custom style for year
+        previousTitleStyle={{
+          fontFamily: "Nunito-BoldItalic",
+          color: "#1A162B",
+        }}
+        nextTitleStyle={{ fontFamily: "Nunito-BoldItalic", color: "#1A162B" }}
+        selectedDayTextStyle={{
+          color: "#fff",
+          fontFamily: "Nunito-BoldItalic",
+        }}
+        selectedDayStyle={{ backgroundColor: "#1A162B" }}
+        todayBackgroundColor={"#007bff"}
+        dayLabelsWrapper={{
+          backgroundColor: "#E2E2E2",
+          borderTopWidth: 1,
+          borderBottomWidth: 1,
+          borderColor: "#1A162B",
+        }}
+        headerWrapperStyle={{ backgroundColor: "#E2E2E2" }}
+        monthTitleStyle={{
+          fontFamily: "Nunito-Bold",
+          fontSize: 20,
+          color: "#343434",
+        }} // Custom style for month
+        yearTitleStyle={{
+          fontFamily: "Nunito-Bold",
+          fontSize: 20,
+          color: "#343434",
+        }} // Custom style for year
         customDayHeaderStyles={(dayOfWeek) => {
           return {
             style: {
               backgroundColor: "#E2E2E2",
             },
             textStyle: {
-              color:'#3a224d', 
-              fontFamily: 'Nunito-BoldItalic',
+              color: "#3a224d",
+              fontFamily: "Nunito-BoldItalic",
               fontSize: 16,
             },
           };
