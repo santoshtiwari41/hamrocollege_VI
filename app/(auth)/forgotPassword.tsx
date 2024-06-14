@@ -45,7 +45,11 @@ if(otpMutation.error){
   console.log(otpMutation.error.message)
 }
 if(otpMutation.isSuccess){
-  router.push('./otp')
+  router.push({
+    pathname: `/(auth)/otp`,
+    params: { email},
+  })
+  
 }
 
   return (

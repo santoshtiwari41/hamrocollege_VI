@@ -56,6 +56,13 @@ interface Batch{
 interface Otp{
   email: string;
 }
+interface OtpVerify{
+  otp:string;
+}
+interface PasswordChange{
+  password: string;
+  email:string;
+}
 
 const api = axios.create({
   baseURL: 'http://192.168.1.5:4000',
@@ -119,3 +126,14 @@ export const getAllStudents = async (batchId: string) => {
     throw error; 
   }
 };
+
+export const verifyOtp= async(otp:OtpVerify) => {
+  return await api.post('/auth/verify', otp)
+}
+export const changePassword= async(password:PasswordChange) => {
+  return await api.post('/auth/student/forgot-password', password)
+}
+
+export const changePasswordWithoutReset= async(password:PasswordChange) => {
+  return await api.post('/student/change-password', password)
+}

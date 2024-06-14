@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,17 +7,14 @@ import {
   TouchableOpacity,
 } from "react-native";
 import OtpImage from "@/data/otpImage";
-import axios from "axios";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-
 import { Ionicons } from "@expo/vector-icons";
 import ButtonComponent from "@/components/Button";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useMutation } from "@tanstack/react-query";
+import { verifyOtp } from "@/services/api";
 
 const Otp: React.FC = () => {
+  const { email } = useLocalSearchParams();
   const router = useRouter();
   const firstInput = useRef<TextInput>(null);
   const secondInput = useRef<TextInput>(null);
@@ -26,18 +23,41 @@ const Otp: React.FC = () => {
   const fifthInput = useRef<TextInput>(null);
   const sixthInput = useRef<TextInput>(null);
 
-  const inputRefs = [firstInput, secondInput, thirdInput, fourthInput, fifthInput, sixthInput];
+  const inputRefs = [
+    firstInput,
+    secondInput,
+    thirdInput,
+    fourthInput,
+    fifthInput,
+    sixthInput,
+  ];
 
   const [otpp, setOtp] = useState({ 1: "", 2: "", 3: "", 4: "", 5: "", 6: "" });
   const [allOtp, setAllOtp] = useState(false);
+  
+  const enteredOtp = Object.values(otpp).join("");
+  const otpMutation = useMutation({
+    mutationFn: verifyOtp,
+  });
+
+  useEffect(() => {
+    if (otpMutation.error) {
+      console.log(otpMutation.error.message);
+      setOtp({ 1: "", 2: "", 3: "", 4: "", 5: "", 6: "" });
+      setAllOtp(false);
+    }
+    if (otpMutation.isSuccess) {
+      router.push({
+        pathname: `/(auth)/changePassword`,
+        params: { email },
+      });
+    }
+  }, [otpMutation.error, otpMutation.isSuccess, router, email]);
 
   const handleOtp = () => {
-    const enteredOtp = Object.values(otpp).join("");
-    console.log(enteredOtp);
-    console.log("pressed");
-    setOtp({ 1: "", 2: "", 3: "", 4: "", 5: "", 6: "" });
-   
-    setAllOtp(false);
+    otpMutation.mutate({
+      otp: enteredOtp,
+    });
   };
 
   return (
@@ -62,11 +82,9 @@ const Otp: React.FC = () => {
                 setOtp(updatedOtp);
 
                 if (text && index < 5) {
-                  
                   const nextInputRef = inputRefs[index + 1];
                   nextInputRef?.current?.focus();
                 } else if (text && index === 5) {
-                  
                   const nextInputRef = inputRefs[index + 1];
                 }
               }}
@@ -76,7 +94,6 @@ const Otp: React.FC = () => {
       </View>
       {allOtp && (
         <Text style={{ textAlign: "center", marginLeft: -50 }}>
-          {" "}
           Please enter all otp
         </Text>
       )}
@@ -91,7 +108,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor:'#E2E2E2'
+    backgroundColor: "#E2E2E2",
   },
   content: {
     fontSize: 20,
