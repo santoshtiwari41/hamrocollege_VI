@@ -33,8 +33,7 @@ const DepartmentScreen: React.FC = () => {
     const [selectedDepartmentIndex, setSelectedDepartmentIndex] = useState<number>(0);
 
     const handleBatchClick = (batch: Batch) => {
-        console.log('navigate');
-   
+       
         router.push({
             pathname: `/students/${batch.id}`, 
             params: { batchId: batch.id },

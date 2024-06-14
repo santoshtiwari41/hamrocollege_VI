@@ -59,6 +59,7 @@ const AddNotificationScreen: React.FC = () => {
      batchId:batchId,
      title,
      body:description,
+     scheduledTime:scheduledDate
     });
    
     navigation.goBack();

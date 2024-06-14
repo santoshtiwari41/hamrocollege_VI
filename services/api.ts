@@ -22,6 +22,8 @@ export interface BatchNotification{
   batchId: string;
   title: string;
   body: string;
+  scheduledTime: string;
+ 
 }
 
 export interface DepartmentNotification{
@@ -29,11 +31,13 @@ export interface DepartmentNotification{
   departmentId: string;
   title: string;
   body: string;
+  scheduledTime: string;
 }
 export interface AllNotification{
   type: string;
   title: string;
   body: string;
+  scheduledTime: string;
 }
 export interface Calendar{
   title: string;
@@ -106,3 +110,12 @@ export const getProfile= async(id:string) => {
   const response = await api.get(`/students/profile?studentId=${id}`);
   return response.data;
 }
+export const getAllStudents = async (batchId: string) => {
+  try {
+    const response = await api.get(`/batchs/${batchId}/students`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching students:', error);
+    throw error; 
+  }
+};

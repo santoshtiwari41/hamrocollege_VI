@@ -53,9 +53,9 @@ const SendToAll: React.FC = () => {
     setImageUri("");
      const res=notificationMutation.mutate({
       type:"COLLEGE",
-      
       title,
       body:description,
+      scheduledTime:scheduledDate,
     });
     console.log(res+"dddd");
     navigation.goBack();

@@ -56,6 +56,7 @@ const SendToDepart: React.FC = () => {
       departmentId:departmentId,
       title,
       body:description,
+      scheduledTime:scheduledDate
     });
     console.log(res+"dddd");
     navigation.goBack();
