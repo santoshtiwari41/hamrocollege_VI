@@ -18,11 +18,11 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-nat
 import { FontAwesome } from '@expo/vector-icons'; 
  import { ScheduledNotification } from "@/redux/notificationSlice";
 import { useMutation } from "@tanstack/react-query";
-import { sendNotificationBatch } from "@/services/api";
+import { sendNotificationAll } from "@/services/api";
 import { useLocalSearchParams,router } from 'expo-router';
-const AddNotificationScreen: React.FC = () => {
-  const { batchId,batchName,departmentId } = useLocalSearchParams();
-  console.log('batch id:',batchId)
+const SendToAll: React.FC = () => {
+  const { departmentId } = useLocalSearchParams();
+ 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledDate, setScheduledDate] = useState<string>(
@@ -34,10 +34,7 @@ const AddNotificationScreen: React.FC = () => {
   const navigation = useNavigation();
   
   const notificationMutation=useMutation({
-    mutationFn: sendNotificationBatch,
-    onSuccess: (res) => {
-    console.log(res)
-    }
+    mutationFn: sendNotificationAll,
   })
   const addNotification = () => {
     const newNotification: ScheduledNotification = {
@@ -54,13 +51,13 @@ const AddNotificationScreen: React.FC = () => {
     setDescription("");
     setScheduledDate(new Date().toISOString());
     setImageUri("");
-    notificationMutation.mutate({
-     type:"BATCH",
-     batchId:batchId,
-     title,
-     body:description,
+     const res=notificationMutation.mutate({
+      type:"COLLEGE",
+      
+      title,
+      body:description,
     });
-   
+    console.log(res+"dddd");
     navigation.goBack();
   };
 
@@ -73,7 +70,7 @@ const AddNotificationScreen: React.FC = () => {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,  // Set to false to avoid cropping
+      allowsEditing: false, 
       quality: 1,
     });
 
@@ -84,9 +81,10 @@ const AddNotificationScreen: React.FC = () => {
 
   if(notificationMutation.isPending) {
     return <Text>Loading...</Text>
+  
   }
   if(notificationMutation.isError) {
-    // return <Text>{loginMutation.error.message}</Text>
+    
     console.log(notificationMutation.error.message)
   }
   if(notificationMutation.isSuccess) {
@@ -96,7 +94,7 @@ const AddNotificationScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>send Notification to {batchName}</Text>
+      <Text style={styles.title}>send Notification to  {departmentId} department</Text>
 
       <TextInput
         style={styles.input}
@@ -200,4 +198,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddNotificationScreen;
+export default SendToAll;

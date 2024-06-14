@@ -17,6 +17,24 @@ export interface Notification{
   scheduledDate: string;
   imageUri: string;
 }
+export interface BatchNotification{
+  type: string;
+  batchId: string;
+  title: string;
+  body: string;
+}
+
+export interface DepartmentNotification{
+  type: string;
+  departmentId: string;
+  title: string;
+  body: string;
+}
+export interface AllNotification{
+  type: string;
+  title: string;
+  body: string;
+}
 export interface Calendar{
   title: string;
   startDate: string;
@@ -36,7 +54,7 @@ interface Otp{
 }
 
 const api = axios.create({
-  baseURL: 'http://192.168.1.3:4000',
+  baseURL: 'http://192.168.1.5:4000',
 });
 
 
@@ -72,3 +90,16 @@ export const getBatchs= async() => {
 export const getOtp= async(otp:Otp) => {
   return await api.post('/auth/otp', otp)
 }
+
+export const sendNotificationBatch= async(notification:BatchNotification) => {
+  return await api.post('/notifications', notification)
+}
+
+export const sendNotificationDepartment= async(notification:DepartmentNotification) => {
+  return await api.post('/notifications', notification)
+}
+
+export const sendNotificationAll= async(notification:AllNotification) => {
+  return await api.post('/notifications', notification)
+}
+

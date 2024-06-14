@@ -4,6 +4,10 @@ import { Title, Caption, Divider, Button } from 'react-native-paper';
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome } from '@expo/vector-icons'; 
 import { useRouter } from 'expo-router';
+import { useDispatch } from 'react-redux';
+import { logout } from '@/redux/authSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { removeData } from '@/services/asyncStorage';
 
 const studentProfile = {
   username: '@santosh.201341',
@@ -16,6 +20,7 @@ const studentProfile = {
 
 const ProfileScreen: React.FC = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [imageUri, setImageUri] = useState<string>("");
   const [rerender, setRerender] = useState<number>(0); 
 
@@ -35,6 +40,10 @@ const ProfileScreen: React.FC = () => {
     if (!result.cancelled) {
       setImageUri(result.assets[0].uri);
     }
+  };
+  const handleLogout = async () => {
+    removeData();
+    router.replace('/(auth)/login')
   };
 
   return ( 
@@ -97,9 +106,9 @@ const ProfileScreen: React.FC = () => {
         <Button
           mode="outlined"
           style={styles.button}
-          onPress={() => console.log('log out')}
+          onPress={handleLogout}
         >
-          log out
+          Log Out
         </Button>
       </View>
     </View>
@@ -129,7 +138,7 @@ const styles = StyleSheet.create({
   divider: {
     marginVertical: 20, 
     width: '100%', 
-    height:2
+    height: 2
   },
   profileInfoSection: {
     marginBottom: 20,

@@ -73,7 +73,8 @@ const CalendarComponent = () => {
   }
 
   if (error) {
-    return <Text>An error has occurred: {error.message}</Text>;
+    // return <Text>An error has occurred: {error.message}</Text>;
+    console.log(error)
   }
 
   return (

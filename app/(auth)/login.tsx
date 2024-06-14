@@ -2,30 +2,24 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   KeyboardAvoidingView,
-  Alert,
 } from "react-native";
-import { Ionicons, Fontisto } from "@expo/vector-icons";
+import { Fontisto } from "@expo/vector-icons";
 import LoginImage from "@/data/LoginImage";
 import { useRouter } from "expo-router";
 import Button from "@/components/Button";
 import InputField from "@/components/InputField";
 import PasswordField from "@/components/PasswordField";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import Animated from "react-native-reanimated";
 import { StatusBar } from "expo-status-bar";
 import { useMutation } from "@tanstack/react-query";
 import { studentLogin } from "@/services/api";
+import { storeData } from "@/services/asyncStorage";
 
-interface LogInProps {}
-
+interface LogInProps{}
 const LogIn: React.FC<LogInProps> = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -39,30 +33,32 @@ const LogIn: React.FC<LogInProps> = () => {
   const toggleRememberMe = () => {
     setRememberMe(!rememberMe);
   };
+
   const loginMutation = useMutation({
     mutationFn: studentLogin,
+    onSuccess: async (data) => {
+      console.log('logged in');
+      const value = data.data.accessToken;
+      await storeData(value);  // Store token immediately after login
+      router.replace('/(app)/home');
+    },
+    onError: (error) => {
+      console.log('error occurs in login ' + error.message);
+    },
   });
-  const handleLogin = () => {
-    if (email == "user" && password == "user@123") {
-      router.push("/(app)/home");
-    }
-    if (email == "admin" && password == "admin@123") {
+
+  const handleLogin = async () => {
+    if (email === "admin" && password === "admin@123") {
       router.push("/(admin)/students");
     } else {
-      const res = loginMutation.mutate({
-      email,
-      password,
+      loginMutation.mutate({
+        email,
+        password,
       });
-      console.log(res);
     }
 
-   
     if (loginMutation.isPending) {
       return <Text>Loading...</Text>;
-    }
-    if (loginMutation.isError) {
-     
-      console.log(loginMutation.error.message);
     }
   };
 
