@@ -1,7 +1,7 @@
 // components/CreateBatchScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { useMutation } from '@tanstack/react-query';
+import { QueryClient, useMutation } from '@tanstack/react-query';
 import { createBatch } from '@/services/api';
 import { useRouter } from 'expo-router';
 
@@ -14,13 +14,14 @@ const CreateBatchScreen: React.FC = () => {
 
   const batchMutation = useMutation({
     mutationFn: createBatch,
-    onSuccess: () => {
+    onSuccess: (() => {
+     
       setName('');
       setStartYear('');
       setEndYear('');
       setDepartmentId('');
       router.back();
-    },
+    }),
     onError: (error: any) => {
       Alert.alert('Error', error.message || 'Something went wrong');
     },

@@ -36,7 +36,7 @@ const ProfileScreen: React.FC = () => {
 
   const handleLogout = async () => {
     await removeData();
-    router.replace('/auth/login');
+    router.replace('/(auth)/login');
   };
 
  

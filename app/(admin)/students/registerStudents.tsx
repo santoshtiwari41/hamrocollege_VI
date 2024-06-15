@@ -6,7 +6,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import InputField from '@/components/InputField';
 import Button from '@/components/Button';
 import { StatusBar } from 'expo-status-bar';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAllStudents, studentRegister } from '@/services/api';
 import { useLocalSearchParams,router } from 'expo-router';
 interface Student {
@@ -18,17 +18,22 @@ interface Student {
 }
 
 const AdminRegisterStudent: React.FC = () => {
-  const { batchId } = useLocalSearchParams();
+  const queryClient=useQueryClient()
+  const { batchId }= useLocalSearchParams();
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [department, setDepartment] = useState<string>('');
  
   const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const BatchId = batchId 
   
   
   const registerMutation = useMutation({
     mutationFn: studentRegister,
+    onSuccess:(()=>{
+      queryClient.invalidateQueries({queryKey: ['students', batchId]})
+      router.back()
+
+    })
   });
 
   const handleRegisterStudent = () => {
@@ -41,7 +46,7 @@ const AdminRegisterStudent: React.FC = () => {
       name,
       email,
       phone:phoneNumber,
-      batchId:BatchId
+      batchId: batchId as string
     });
     resetForm();
   };

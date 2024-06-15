@@ -23,7 +23,7 @@ const AdminRegisterStudent: React.FC = () => {
   const router = useRouter();
   const { isLoading, isError, data } = useQuery({
     queryKey: ['students', batchId],
-    queryFn: () => getAllStudents(batchId),
+    queryFn: () => getAllStudents(batchId as string),
     enabled: !!batchId,
   });
 
@@ -36,7 +36,7 @@ const AdminRegisterStudent: React.FC = () => {
   const handleRegisterStudent = () => {
     router.push({
       pathname: `/students/registerStudents`,
-      params: { batchId: batchId },
+      params: { batchId: batchId as string },
     });
   };
 

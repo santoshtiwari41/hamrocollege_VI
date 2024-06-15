@@ -4,7 +4,7 @@ export interface StudentData {
   name: string;
   email: string;
   phone: string;
-  batchId: string | undefined;
+  batchId: string;
   
 }
 export interface Credentials{
@@ -65,7 +65,7 @@ interface PasswordChange{
 }
 
 const api = axios.create({
-  baseURL: 'http://192.168.1.5:4000',
+  baseURL: 'http:// 192.168.1.9:4000',
 });
 
 

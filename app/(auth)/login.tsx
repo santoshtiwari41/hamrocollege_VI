@@ -24,7 +24,7 @@ const LogIn: React.FC<LogInProps> = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [rememberMe, setRememberMe] = useState<boolean>(false);
-
+const[error,setError]=useState('')
   const router = useRouter();
   const handleForgotPassword = () => {
     router.push("/forgotPassword");
@@ -37,20 +37,20 @@ const LogIn: React.FC<LogInProps> = () => {
   const loginMutation = useMutation({
     mutationFn: studentLogin,
     onSuccess: async (data) => {
-      console.log('logged in');
+     
       const value = data.data.accessToken;
       await storeData(value);  // Store token immediately after login
       await setId(value)
       router.replace('/(app)/home');
     },
     onError: (error) => {
-      console.log('error occurs in login ' + error.message);
+      console.log('error occurs in login ' + error);
     },
   });
 
   const handleLogin = async () => {
     if (email === "admin" && password === "admin@123") {
-      router.push("/(admin)/students");
+      router.replace("/(admin)/students");
     } else {
       loginMutation.mutate({
         email,

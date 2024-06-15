@@ -16,17 +16,17 @@ interface Batch {
 }
 
 const departmentNames: { [key: number]: string } = {
-  1: 'Civil',
+  1: 'Computer',
   2: 'IT',
-  3: 'Computer',
-  4: 'Software',
+  3: 'Software',
+  4: 'Civil',
 };
 
 const DepartmentScreen: React.FC = () => {
     const router = useRouter();
     const navigation = useNavigation();
     const { isLoading, error, data } = useQuery({
-        queryKey: ['batchData'],
+        queryKey: ['batchId',10],
         queryFn: getBatchs
     });
  

@@ -37,6 +37,17 @@ export default function Layout() {
             ),
           }}
         />
+    
+      <Drawer.Screen
+          name="setting/index" 
+          options={{
+            drawerLabel: 'Setting',
+            title: 'Setting',
+            drawerIcon: ({ color, size }) => (
+              <MaterialIcons name="settings" color={color} size={size} />
+            ),
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );
