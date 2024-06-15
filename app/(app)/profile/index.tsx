@@ -1,39 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Image, ActivityIndicator } from 'react-native';
 import { Title, Caption, Divider, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome } from '@expo/vector-icons'; 
 import { useRouter } from 'expo-router';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { removeData } from '@/services/asyncStorage';
-import { getUserId } from '@/services/asyncStorage';
-import { useQuery } from '@tanstack/react-query';
-import { getProfile } from '@/services/api';
 
+import { RootState } from '@/redux/store';
 const ProfileScreen: React.FC = () => {
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUserId = async () => {
-      const data = await getUserId();
-      const { id } = JSON.parse(data);
-      console.log('userid: ' + id);
-      setUserId(id);
-    };
-
-    fetchUserId();
-  }, []);
-
-  const { isLoading, isError, data } = useQuery({
-    queryKey: ['profile', userId],
-    queryFn: () => getProfile(userId),
-    enabled: !!userId,
-  });
-
-  const router = useRouter();
-  const dispatch = useDispatch();
+  
+  const {  batchId, departmentId,profile,userId} = useSelector((state: RootState) => state.profile);
+  
   const [imageUri, setImageUri] = useState<string>("");
 
+  const router = useRouter();
+  
   const selectImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -54,24 +36,10 @@ const ProfileScreen: React.FC = () => {
 
   const handleLogout = async () => {
     await removeData();
-    router.replace('/(auth)/login');
+    router.replace('/auth/login');
   };
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
-
-  if (isError) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Error fetching profile</Text>
-      </View>
-    );
-  }
+ 
 
   return (
     <View style={styles.container}>
@@ -88,8 +56,8 @@ const ProfileScreen: React.FC = () => {
             )}
           </View>
         </TouchableOpacity>
-        <Title style={styles.title}>{data?.name || 'Loading...'}</Title>
-        <Caption style={styles.caption}>{'@' + (data?.email.split('@')[0] || 'username')}</Caption>
+        <Title style={styles.title}>{profile?.name || 'Loading...'}</Title>
+        <Caption style={styles.caption}>{'@' + (profile?.email.split('@')[0] || 'username')}</Caption>
       </View>
 
       <Divider style={styles.divider} />
@@ -97,23 +65,23 @@ const ProfileScreen: React.FC = () => {
       <View style={styles.profileInfoSection}>
         <View style={styles.profileInfoRow}>
           <Text style={styles.label}>Student ROLL:</Text>
-          <Text style={styles.value}>{data?.crn || 'Loading...'}</Text>
+          <Text style={styles.value}>{profile?.crn || 'Loading...'}</Text>
         </View>
         <View style={styles.profileInfoRow}>
           <Text style={styles.label}>Email:</Text>
-          <Text style={styles.value}>{data?.email || 'Loading...'}</Text>
+          <Text style={styles.value}>{profile?.email || 'Loading...'}</Text>
         </View>
         <View style={styles.profileInfoRow}>
           <Text style={styles.label}>Department:</Text>
-          <Text style={styles.value}>Computer</Text>
+          <Text style={styles.value}>{profile?.batch?.department?.name || 'Loading...'}</Text>
         </View>
         <View style={styles.profileInfoRow}>
           <Text style={styles.label}>Year:</Text>
-          <Text style={styles.value}>{data?.batch?.startYear} - {data?.batch?.endYear}</Text>
+          <Text style={styles.value}>{profile?.batch?.startYear} - {profile?.batch?.endYear}</Text>
         </View>
         <View style={styles.profileInfoRow}>
           <Text style={styles.label}>Phone:</Text>
-          <Text style={styles.value}>{data?.phone || 'Loading...'}</Text>
+          <Text style={styles.value}>{profile?.phone || 'Loading...'}</Text>
         </View>
       </View>
 
@@ -121,16 +89,18 @@ const ProfileScreen: React.FC = () => {
 
       <View style={styles.buttonSection}>
         <Button
-          mode="contained"
-          style={styles.button}
-          onPress={() => console.log('Edit Profile')}
+         mode="outlined"
+         
+          style={[styles.button, { borderColor: '#4e247d' }]}
+          onPress={() => router.push('/(app)/profile/changePassword')}
         >
-          Edit Profile
+          change Password
         </Button>
         <Button
           mode="outlined"
-          style={styles.button}
-          onPress={() => router.push('/profile/settings')}
+          labelStyle={{ color: '#8b41e0' }}
+          style={[styles.button, { borderColor: '#8b41e0' }]}
+          onPress={() => router.push('/profile/setting')}
         >
           Settings
         </Button>
@@ -211,20 +181,6 @@ const styles = StyleSheet.create({
   placeholderText: {
     color: '#FFF',
     marginTop: 5,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 18,
   },
 });
 

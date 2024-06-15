@@ -1,11 +1,12 @@
+import { StyleSheet, Text, View, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image, FlatList } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useQuery } from '@tanstack/react-query';
-import { getNotificationByStudent } from '@/services/api';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import { getNotificationByStudent } from '@/services/api';
+import { useQuery } from '@tanstack/react-query';
 import { ActivityIndicator } from 'react-native-paper';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 
 interface Notification {
@@ -23,23 +24,16 @@ interface Notification {
   updatedAt: string;
 }
 
-const CollegeNotification: React.FC = () => {
+const DepartmentNotification = () => {
   const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const { batchId, departmentId, userId } = useSelector((state: RootState) => state.profile);
+  const { departmentId } = useSelector((state: RootState) => state.profile);
 
   const { isLoading, isError, data } = useQuery({
-    queryKey: ['students', userId],
-    queryFn: () => getNotificationByStudent(userId),
-    enabled: !!userId,
+    queryKey: ['notifications', departmentId],
+    queryFn: () => getNotificationByStudent(departmentId),
+    enabled: !!departmentId,
   });
-
-  useEffect(() => {
-    if (data) {
-      console.log('Notification Data:', data);
-      setNotifications(data);
-    }
-  }, [data]);
 
   const handlePress = (item: Notification) => {
     console.log('this is from department notification', departmentId);
@@ -48,6 +42,13 @@ const CollegeNotification: React.FC = () => {
       params: { title: item.title, description: item.body, imageUrl: item.image },
     });
   };
+
+  useEffect(() => {
+    if (data) {
+      console.log('Notification Data:', data);
+      setNotifications(data);
+    }
+  }, [data]);
 
   if (isLoading) {
     return (
@@ -87,7 +88,7 @@ const CollegeNotification: React.FC = () => {
   );
 };
 
-export default CollegeNotification;
+export default DepartmentNotification;
 
 const styles = StyleSheet.create({
   container: {

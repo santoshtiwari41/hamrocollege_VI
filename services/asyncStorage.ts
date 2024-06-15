@@ -58,5 +58,20 @@ const getUserId = async () => {
   }
 };
 
+export const saveFcmToken = async (token:string) => {
+  try {
+    await AsyncStorage.setItem('fcmToken', token);
+  } catch (e) {
+    console.error('Failed to save the FCM token to the storage', e);
+  }
+};
 
+export const getFcmToken = async () => {
+  try {
+    const token = await AsyncStorage.getItem('fcmToken');
+    return token;
+  } catch (e) {
+    console.error('Failed to fetch the FCM token from storage', e);
+  }
+};
 export { storeData, getData, getUserId, removeData };

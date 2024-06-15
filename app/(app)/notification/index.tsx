@@ -4,9 +4,10 @@ import SegmentedControlTab from "react-native-segmented-control-tab";
 import { GestureHandlerRootView, PanGestureHandler, State } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 import ClassNotification from "@/components/notifications/ClassNotification";
-import UniversityNotification from "@/components/notifications/UniversityNotification";
 import CollegeNotification from "@/components/notifications/CollegeNotification";
+import DepartmentNotification from "@/components/notifications/DepartmentNotification";
 const { width } = Dimensions.get("window");
+
 
 const Notification: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -73,7 +74,7 @@ const Notification: React.FC = () => {
         <Animated.View style={[styles.content, animatedContentStyle]}>
           <ClassNotification />
          <CollegeNotification />
-          <UniversityNotification />
+          <DepartmentNotification />
         </Animated.View>
       </PanGestureHandler>
     </GestureHandlerRootView>

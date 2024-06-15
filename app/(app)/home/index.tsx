@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ScrollView, Image,ActivityIndicator } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import MapViewDirections from 'react-native-maps-directions';
 import { Asset } from 'expo-asset';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useQuery } from '@tanstack/react-query';
+import { getProfile } from '@/services/api';
+import { setUserId, setBatchId, setDepartmentId, setProfile } from '@/redux/profileSlice';
 
+import { getUserId } from '@/services/asyncStorage';
+import { useDispatch } from 'react-redux';
 const { width: viewportWidth } = Dimensions.get('window');
 
 const images = [
@@ -45,6 +50,33 @@ const collegeLocation = {
 };
 
 const HomeScreen: React.FC = () => {
+  const [userID, setUserID] = useState<string | null>(null);
+  const dispatch=useDispatch()
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const data = await getUserId();
+      const { id } = JSON.parse(data);
+      console.log('userid: ' + id);
+      setUserID(id);
+      dispatch(setUserId(id));
+    };
+
+    fetchUserId();
+  }, []);
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ['profile', userID],
+    queryFn: () => getProfile(userID),
+    enabled: !!userID,
+  });
+
+  useEffect(() => {
+    if (data) {
+      console.log('Profile Data:', data);
+      dispatch(setProfile(data));
+      dispatch(setBatchId(data.batch ? data.batch.id : null));
+     dispatch( setDepartmentId(data.batch && data.batch.department ? data.batch.department.id : null));
+    }
+  }, [data]);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
@@ -60,6 +92,21 @@ const HomeScreen: React.FC = () => {
       setLocation(location);
     })();
   }, []);
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error fetching profile</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -182,6 +229,20 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     color: 'grey',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 18,
   },
 });
 

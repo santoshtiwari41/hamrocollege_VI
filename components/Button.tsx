@@ -18,7 +18,7 @@ export default Button;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1A162B',
+    backgroundColor: '#4e247d',
     height: hp('6%'),
     width: wp('90%') ,
     borderRadius: 10,

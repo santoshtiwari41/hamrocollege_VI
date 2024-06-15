@@ -117,6 +117,10 @@ export const getProfile= async(id:string) => {
   const response = await api.get(`/students/profile?studentId=${id}`);
   return response.data;
 }
+export const getBatchId= async(id:string) => {
+  return await api.get(`/students/profile?studentId=${id}`);
+  
+}
 export const getAllStudents = async (batchId: string) => {
   try {
     const response = await api.get(`/batchs/${batchId}/students`);
@@ -137,3 +141,33 @@ export const changePassword= async(password:PasswordChange) => {
 export const changePasswordWithoutReset= async(password:PasswordChange) => {
   return await api.post('/student/change-password', password)
 }
+
+
+
+export const getNotificationByStudent = async (studentId: string) => {
+  try {
+    const response = await api.get(`/notifications/student?userId=${studentId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching notification:', error);
+    throw error; 
+  }
+};
+export const getNotificationByBatch = async (batchId: string) => {
+  try {
+    const response = await api.get(`/notifications/batch?batchId=${batchId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching notification:', error);
+    throw error; 
+  }
+};
+export const getNotificationByDepartment = async (departId: string) => {
+  try {
+    const response = await api.get(`/notifications/department?userId=${departId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching notification:', error);
+    throw error; 
+  }
+};

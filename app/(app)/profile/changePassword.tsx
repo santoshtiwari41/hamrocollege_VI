@@ -22,16 +22,16 @@ const LogIn = () => {
   const {email}=useLocalSearchParams()
   const router = useRouter();
 
-  const changePasswordMutation = useMutation({
-    mutationFn: changePassword,
-    onSuccess: async (data) => {
-      console.log('password changed');
-      router.replace('/(auth)/login');
-    },
-    onError: (error) => {
-      console.log('error occurs in change password ' + error.message);
-    },
-  });
+//   const changePasswordMutation = useMutation({
+//     mutationFn: changePassword,
+//     onSuccess: async (data) => {
+//       console.log('password changed');
+//       router.replace('/(auth)/login');
+//     },
+//     onError: (error) => {
+//       console.log('error occurs in change password ' + error.message);
+//     },
+//   });
 const handleChangePassword = () => {
     if (!password ||!cpassword) {
       return;
@@ -39,14 +39,15 @@ const handleChangePassword = () => {
     if (password!== cpassword) {
       return;
     }
-    changePasswordMutation.mutate({
-      email:email,
-      password: cpassword,
-    });
+    // changePasswordMutation.mutate({
+    //   email:email,
+    //   password: cpassword,
+    // });
+    console.log('changed password')
   };
-  if (changePasswordMutation.isPending) {
-    return <Text>Loading...</Text>;
-  }
+//   if (changePasswordMutation.isPending) {
+//     return <Text>Loading...</Text>;
+//   }
 
   return (
     <Animated.View style={{ flex: 1, backgroundColor: "#E2E2E2" }}>
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   title:{
-    paddingTop:hp('10%'),
+    
     alignItems:'center',
     justifyContent:'center', 
     fontSize: 24,
