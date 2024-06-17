@@ -56,7 +56,7 @@ const Notification: React.FC = () => {
     <GestureHandlerRootView style={styles.container}>
       <View>
         <SegmentedControlTab
-          values={["Class", "College", "All"]}
+          values={["Class", "College", "Department"]}
           selectedIndex={selectedIndex}
           onTabPress={handleIndexChange}
           tabsContainerStyle={styles.tabsContainerStyle}

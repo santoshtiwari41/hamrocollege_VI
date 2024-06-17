@@ -18,10 +18,10 @@ interface Batch {
 }
 
 const departmentNames: { [key: number]: string } = {
-  1: 'Civil',
+  1: 'Computer',
   2: 'IT',
-  3: 'Computer',
-  4: 'Software',
+  3: 'Software',
+  4: 'Civil',
 };
 
 const Notification: React.FC = () => {
@@ -53,6 +53,14 @@ const Notification: React.FC = () => {
         if (selectedDepartmentIndex !== null) {
             router.push({
                 pathname: `(admin)/notification/sendToAll`,
+                params: { departmentId: selectedDepartmentIndex + 1 },
+            });
+        }
+    };
+    const handleSendToDepart = () => {
+        if (selectedDepartmentIndex !== null) {
+            router.push({
+                pathname: `(admin)/notification/SendToDepart`,
                 params: { departmentId: selectedDepartmentIndex + 1 },
             });
         }
@@ -119,7 +127,7 @@ const Notification: React.FC = () => {
             )}
 
             {selectedOption === 'all' && (
-                <TouchableOpacity style={styles.sendToAllButton} onPress={handleSendToAll}>
+                <TouchableOpacity style={styles.sendToAllButton} onPress={handleSendToDepart}>
                     <Entypo name="chevron-right" size={24} color="white" />
                     <Button title={`Send to All Batches of ${departmentNames[selectedDepartmentId]}`}/>
                 </TouchableOpacity>

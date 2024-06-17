@@ -26,17 +26,17 @@ interface Notification {
 const CollegeNotification: React.FC = () => {
   const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const { batchId, departmentId, userId } = useSelector((state: RootState) => state.profile);
+  const {departmentId, userId } = useSelector((state: RootState) => state.profile);
 
   const { isLoading, isError, data } = useQuery({
-    queryKey: ['students', userId],
+    queryKey: ['college', userId],
     queryFn: () => getNotificationByStudent(userId),
     enabled: !!userId,
   });
 
   useEffect(() => {
     if (data) {
-      console.log('Notification Data:', data);
+      console.log('Notification Data from college:', data);
       setNotifications(data);
     }
   }, [data]);

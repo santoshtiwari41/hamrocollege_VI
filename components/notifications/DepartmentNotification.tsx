@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import { getNotificationByStudent } from '@/services/api';
+import { getNotificationByDepartment, getNotificationByStudent } from '@/services/api';
 import { useQuery } from '@tanstack/react-query';
 import { ActivityIndicator } from 'react-native-paper';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
@@ -31,7 +31,7 @@ const DepartmentNotification = () => {
 
   const { isLoading, isError, data } = useQuery({
     queryKey: ['notifications', departmentId],
-    queryFn: () => getNotificationByStudent(departmentId),
+    queryFn: () => getNotificationByDepartment(departmentId),
     enabled: !!departmentId,
   });
 
@@ -45,7 +45,7 @@ const DepartmentNotification = () => {
 
   useEffect(() => {
     if (data) {
-      console.log('Notification Data:', data);
+      console.log('Notification Data from department:', data);
       setNotifications(data);
     }
   }, [data]);
@@ -68,6 +68,7 @@ const DepartmentNotification = () => {
 
   return (
     <View style={styles.container}>
+   
       <FlatList
         data={notifications}
         keyExtractor={(item) => item.id.toString()}

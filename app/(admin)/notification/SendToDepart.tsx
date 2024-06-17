@@ -22,7 +22,7 @@ import { sendNotificationDepartment } from "@/services/api";
 import { useLocalSearchParams,router } from 'expo-router';
 const SendToDepart: React.FC = () => {
   const { departmentId } = useLocalSearchParams();
- 
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledDate, setScheduledDate] = useState<string>(

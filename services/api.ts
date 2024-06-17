@@ -65,7 +65,7 @@ interface PasswordChange{
 }
 
 const api = axios.create({
-  baseURL: 'http:// 192.168.1.9:4000',
+  baseURL: 'http://192.168.1.8:4000',
 });
 
 
@@ -150,7 +150,7 @@ export const getNotificationByStudent = async (studentId: string) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching notification:', error);
-    throw error; 
+    throw error; p
   }
 };
 export const getNotificationByBatch = async (batchId: string) => {
@@ -164,7 +164,7 @@ export const getNotificationByBatch = async (batchId: string) => {
 };
 export const getNotificationByDepartment = async (departId: string) => {
   try {
-    const response = await api.get(`/notifications/department?userId=${departId}`);
+    const response = await api.get(`/notifications/department?departId=${departId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching notification:', error);

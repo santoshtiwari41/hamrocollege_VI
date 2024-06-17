@@ -1,25 +1,21 @@
-// components/CreateBatchScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { QueryClient, useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createBatch } from '@/services/api';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const CreateBatchScreen: React.FC = () => {
+  const { departmentId } = useLocalSearchParams();
   const router = useRouter();
   const [name, setName] = useState<string>('');
   const [startYear, setStartYear] = useState<string>('');
   const [endYear, setEndYear] = useState<string>('');
-  const [departmentId, setDepartmentId] = useState<string>(''); 
+  const queryClient = useQueryClient();
 
   const batchMutation = useMutation({
     mutationFn: createBatch,
     onSuccess: (() => {
-     
-      setName('');
-      setStartYear('');
-      setEndYear('');
-      setDepartmentId('');
+      queryClient.invalidateQueries({ queryKey: ['batches'] });
       router.back();
     }),
     onError: (error: any) => {
@@ -40,7 +36,6 @@ const CreateBatchScreen: React.FC = () => {
       departmentId: parseInt(departmentId, 10),
     });
   };
-  
 
   return (
     <View style={styles.container}>
@@ -68,13 +63,7 @@ const CreateBatchScreen: React.FC = () => {
         keyboardType="numeric"
       />
       <Text style={styles.label}>Department</Text>
-      <TextInput
-        style={styles.input}
-        value={departmentId}
-        onChangeText={setDepartmentId}
-        placeholder="Enter department id"
-        keyboardType="numeric"
-      />
+     
       <Button title="Create Batch" onPress={handleCreateBatch} />
       {batchMutation.isPending && <Text>Loading...</Text>}
     </View>
@@ -100,3 +89,4 @@ const styles = StyleSheet.create({
 });
 
 export default CreateBatchScreen;
+     

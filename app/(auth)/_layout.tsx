@@ -1,5 +1,5 @@
 
-import { Stack } from 'expo-router/stack';
+import { Stack } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { StatusBar } from 'expo-status-bar';
 export default function AuthLayout() {
