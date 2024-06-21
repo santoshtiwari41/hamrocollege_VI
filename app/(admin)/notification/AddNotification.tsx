@@ -8,61 +8,44 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { useDispatch } from "react-redux";
-import { addScheduledNotification } from "@/redux/notificationSlice";
+
 import { useNavigation } from "expo-router";
-import { v4 as uuidv4 } from "uuid";
 import Button from "@/components/Button";
 import * as ImagePicker from "expo-image-picker";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { FontAwesome } from '@expo/vector-icons'; 
- import { ScheduledNotification } from "@/redux/notificationSlice";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { sendNotificationBatch } from "@/services/api";
 import { useLocalSearchParams,router } from 'expo-router';
 const AddNotificationScreen: React.FC = () => {
-  const { batchId,batchName,departmentId } = useLocalSearchParams();
-  console.log('batch id:',batchId)
+  const { batchId,batchName,} = useLocalSearchParams();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledDate, setScheduledDate] = useState<string>(
     new Date().toISOString()
   );
   const [imageUri, setImageUri] = useState<string>("");
-
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const navigation = useNavigation();
   
   const notificationMutation=useMutation({
     mutationFn: sendNotificationBatch,
-    onSuccess: (res) => {
-    console.log(res)
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['classNotification'] });
     }
   })
   const addNotification = () => {
-    const newNotification: ScheduledNotification = {
-      id: uuidv4(),
-      title,
-      description,
-      scheduledDate,
-      imageUri: imageUri || "",  
-    };
-
-    dispatch(addScheduledNotification(newNotification));
- 
-    setTitle("");
-    setDescription("");
-    setScheduledDate(new Date().toISOString());
-    setImageUri("");
-    notificationMutation.mutate({
-     type:"BATCH",
-     batchId:batchId,
-     title,
-     body:description,
-     scheduledTime:scheduledDate
-    });
-   
-    navigation.goBack();
+    if(typeof batchId==='string'){
+      notificationMutation.mutate({
+        type:"BATCH",
+        batchId:batchId,
+        title,
+        body:description,
+        scheduledTime:scheduledDate
+       });
+       navigation.goBack();
+    }
+    
   };
 
   const selectImage = async () => {
@@ -74,7 +57,7 @@ const AddNotificationScreen: React.FC = () => {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,  // Set to false to avoid cropping
+      allowsEditing: false, 
       quality: 1,
     });
 
@@ -83,11 +66,7 @@ const AddNotificationScreen: React.FC = () => {
     }
   };
 
-  if(notificationMutation.isPending) {
-    return <Text>Loading...</Text>
-  }
   if(notificationMutation.isError) {
-    // return <Text>{loginMutation.error.message}</Text>
     console.log(notificationMutation.error.message)
   }
   if(notificationMutation.isSuccess) {

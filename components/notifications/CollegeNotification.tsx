@@ -29,7 +29,7 @@ const CollegeNotification: React.FC = () => {
   const {departmentId, userId } = useSelector((state: RootState) => state.profile);
 
   const { isLoading, isError, data } = useQuery({
-    queryKey: ['college', userId],
+    queryKey: ['allNotification',userId],
     queryFn: () => getNotificationByStudent(userId),
     enabled: !!userId,
   });

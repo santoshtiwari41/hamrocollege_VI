@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, ScrollView, Image,ActivityIndicator } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
-import MapViewDirections from 'react-native-maps-directions';
 import { Asset } from 'expo-asset';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery } from '@tanstack/react-query';
@@ -55,10 +53,13 @@ const HomeScreen: React.FC = () => {
   useEffect(() => {
     const fetchUserId = async () => {
       const data = await getUserId();
-      const { id } = JSON.parse(data);
-      console.log('userid: ' + id);
-      setUserID(id);
+      if(typeof data ==='string'){
+       const { id } = JSON.parse(data);
+       setUserID(id);
       dispatch(setUserId(id));
+      }
+    
+      
     };
 
     fetchUserId();
@@ -77,21 +78,8 @@ const HomeScreen: React.FC = () => {
      dispatch( setDepartmentId(data.batch && data.batch.department ? data.batch.department.id : null));
     }
   }, [data]);
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
-  }, []);
+ 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -129,40 +117,32 @@ const HomeScreen: React.FC = () => {
       />
       <View style={styles.mapContainer}>
         <Text style={styles.mapTitle}>Our College Location</Text>
-        {location && (
+       
           <MapView
             style={styles.map}
             initialRegion={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
+              latitude: 27.67141,
+              longitude: 85.33913,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
+          showsMyLocationButton
+          showsUserLocation
           >
-            <Marker
+            {/* <Marker
               coordinate={location.coords}
               title="Your Location"
               description="You are here"
-            />
+            /> */}
             <Marker
               coordinate={collegeLocation}
               title="Our College"
               description="Welcome to our college"
             />
-            <MapViewDirections
-              origin={location.coords}
-              destination={collegeLocation}
-              apikey={'YOUR_API_KEY'}
-              strokeWidth={3}
-              strokeColor="hotpink"
-            />
+           
           </MapView>
-        )}
-        {!location && (
-          <Text style={styles.loadingText}>
-            {errorMsg ? errorMsg : 'Loading location...'}
-          </Text>
-        )}
+    
+        
       </View>
     </View>
   );
@@ -210,19 +190,21 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   mapContainer: {
-  padding:20,
+    padding:20,
     alignItems: 'center',
-    marginBottom:40,
-    backgroundColor:'#FFFFFF'
+   
+    backgroundColor:'#FFFFFF',
+
   },
   map: {
-    width: wp('95%'),
+    borderTopRightRadius:10,
+    
+    width: wp('100%'),
     height: 300,
     borderRadius: 10,
   },
   mapTitle: {
     fontSize: 16,
-   
     marginBottom: 10,
     fontFamily:'Nunito-Bold'
   },

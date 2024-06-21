@@ -30,29 +30,24 @@ interface Notification {
 const NotificationList = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const router = useRouter();
-  const {  batchId, departmentId,userId} = useSelector((state: RootState) => state.profile);  
+  const {  batchId} = useSelector((state: RootState) => state.profile);  
   const { isLoading, isError, data } = useQuery({
-    queryKey: ['students', batchId],
+    queryKey: ['classNotification',batchId],
     queryFn: () => getNotificationByBatch(batchId),
     enabled: !!batchId,
   });
   useEffect(() => {
     if (data) {
-      console.log('Notification Data:', data);
       setNotifications(data);
     }
   }, [data]);
 
   const handlePress = (item: Notification) => {
-    console.log('this is from department notification', departmentId);
     router.push({
       pathname: `/notification/${item.id}`,
       params: { title: item.title, description: item.body, imageUrl: item.image },
     });
   };
-
-
-
   
   if (isLoading) {
     return (

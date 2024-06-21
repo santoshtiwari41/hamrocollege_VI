@@ -30,7 +30,7 @@ const DepartmentNotification = () => {
   const { departmentId } = useSelector((state: RootState) => state.profile);
 
   const { isLoading, isError, data } = useQuery({
-    queryKey: ['notifications', departmentId],
+    queryKey: ['departNotification', departmentId],
     queryFn: () => getNotificationByDepartment(departmentId),
     enabled: !!departmentId,
   });

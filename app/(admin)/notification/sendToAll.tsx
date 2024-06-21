@@ -8,56 +8,48 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { useDispatch } from "react-redux";
-import { addScheduledNotification } from "@/redux/notificationSlice";
+
 import { useNavigation } from "expo-router";
-import { v4 as uuidv4 } from "uuid";
+
 import Button from "@/components/Button";
 import * as ImagePicker from "expo-image-picker";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-import { FontAwesome } from '@expo/vector-icons'; 
- import { ScheduledNotification } from "@/redux/notificationSlice";
-import { useMutation } from "@tanstack/react-query";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
+import { FontAwesome } from "@expo/vector-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { sendNotificationAll } from "@/services/api";
-import { useLocalSearchParams,router } from 'expo-router';
+import { useLocalSearchParams, router } from "expo-router";
 const SendToAll: React.FC = () => {
   const { departmentId } = useLocalSearchParams();
- 
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledDate, setScheduledDate] = useState<string>(
     new Date().toISOString()
   );
+  const queryClient=useQueryClient()
   const [imageUri, setImageUri] = useState<string>("");
-
-  const dispatch = useDispatch();
   const navigation = useNavigation();
-  
-  const notificationMutation=useMutation({
+  const notificationMutation = useMutation({
     mutationFn: sendNotificationAll,
-  })
+    onSuccess: ((res) => {
+      queryClient.invalidateQueries({ queryKey: ['allNotification'] });
+      Alert.alert("Success", "Student Registered Successfully");
+    }),
+    onError: ((err) => {
+      Alert.alert("Error", err.message);
+    }),
+  });
   const addNotification = () => {
-    const newNotification: ScheduledNotification = {
-      id: uuidv4(),
+    notificationMutation.mutate({
+      type: "COLLEGE",
       title,
-      description,
-      scheduledDate,
-      imageUri: imageUri || "",  
-    };
-
-    dispatch(addScheduledNotification(newNotification));
- 
-    setTitle("");
-    setDescription("");
-    setScheduledDate(new Date().toISOString());
-    setImageUri("");
-     const res=notificationMutation.mutate({
-      type:"COLLEGE",
-      title,
-      body:description,
-      scheduledTime:scheduledDate,
+      body: description,
+      scheduledTime: scheduledDate,
     });
-    console.log(res+"dddd");
+
     navigation.goBack();
   };
 
@@ -70,7 +62,7 @@ const SendToAll: React.FC = () => {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false, 
+      allowsEditing: false,
       quality: 1,
     });
 
@@ -79,22 +71,11 @@ const SendToAll: React.FC = () => {
     }
   };
 
-  if(notificationMutation.isPending) {
-    return <Text>Loading...</Text>
-  
-  }
-  if(notificationMutation.isError) {
-    
-    console.log(notificationMutation.error.message)
-  }
-  if(notificationMutation.isSuccess) {
-    Alert.alert('Success', 'Student Registered Successfully');
-   
-  }
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>send Notification to  {departmentId} department</Text>
+      <Text style={styles.title}>
+        send Notification to {departmentId} department
+      </Text>
 
       <TextInput
         style={styles.input}
@@ -119,7 +100,11 @@ const SendToAll: React.FC = () => {
       <TouchableOpacity onPress={selectImage}>
         <View style={styles.imageContainer}>
           {imageUri ? (
-            <Image source={{ uri: imageUri }} style={styles.image} resizeMode="contain" />
+            <Image
+              source={{ uri: imageUri }}
+              style={styles.image}
+              resizeMode="contain"
+            />
           ) : (
             <View style={styles.placeholder}>
               <FontAwesome name="camera" size={40} color="#FFF" />

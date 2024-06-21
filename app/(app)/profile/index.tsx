@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { Title, Caption, Divider, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome } from '@expo/vector-icons'; 
@@ -42,7 +42,7 @@ const ProfileScreen: React.FC = () => {
  
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={selectImage}>
           <View style={styles.imageContainer}>
@@ -112,7 +112,7 @@ const ProfileScreen: React.FC = () => {
           Log Out
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

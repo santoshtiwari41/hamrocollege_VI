@@ -12,7 +12,6 @@ export default function Layout() {
           fontWeight: 'bold',
         },
       }}>
-     
       <Stack.Screen name="index" options={{headerShown:false}} />
       <Stack.Screen name="AddNotification" options={{headerShown:false}} />
       <Stack.Screen name="sendToAll" options={{headerShown:false}} />
