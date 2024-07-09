@@ -1,24 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView, Image,ActivityIndicator } from 'react-native';
-import Carousel from 'react-native-reanimated-carousel';
-import MapView, { Marker } from 'react-native-maps';
-import { Asset } from 'expo-asset';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useQuery } from '@tanstack/react-query';
-import { getProfile } from '@/services/api';
-import { setUserId, setBatchId, setDepartmentId, setProfile } from '@/redux/profileSlice';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Dimensions,
+} from "react-native";
+import { Image } from "react-native";
+import { Asset } from "expo-asset";
+import { useQuery } from "@tanstack/react-query";
+import { getProfile } from "@/services/api";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
-import { getUserId } from '@/services/asyncStorage';
-import { useDispatch } from 'react-redux';
-const { width: viewportWidth } = Dimensions.get('window');
-
+import {
+  setUserId,
+  setBatchId,
+  setDepartmentId,
+  setProfile,
+} from "@/redux/profileSlice";
+import { Colors } from "@/constants/Colors";
+import { getUserId } from "@/services/asyncStorage";
+import { useDispatch } from "react-redux";
+// import CarouselComponent from "@/components/Carousel";
+import Carousel from "react-native-snap-carousel";
+import MyCarousel from "@/components/Carousel";
+import Items from "@/components/home/Items";
+const { width: viewportWidth } = Dimensions.get("window");
 const images = [
-  Asset.fromModule(require('../../../assets/images/ncit2.jpg')).uri,
-  Asset.fromModule(require('../../../assets/images/ncit3.jpg')).uri,
-  Asset.fromModule(require('../../../assets/images/ncit4.jpg')).uri,
-  Asset.fromModule(require('../../../assets/images/ncit5.jpeg')).uri,
+  Asset.fromModule(require("../../../assets/images/ncit2.jpg")).uri,
+  Asset.fromModule(require("../../../assets/images/ncit3.jpg")).uri,
+  Asset.fromModule(require("../../../assets/images/ncit4.jpg")).uri,
+  Asset.fromModule(require("../../../assets/images/ncit5.jpeg")).uri,
 ];
-
 const carouselItems = [
   {
     title: "",
@@ -41,45 +57,65 @@ const carouselItems = [
     image: { uri: images[5] },
   },
 ];
-
-const collegeLocation = {
-  latitude: 27.67141,
-  longitude: 85.33913,
-};
-
 const HomeScreen: React.FC = () => {
+  const logo = Asset.fromModule(require("../../../assets/images/logo3.png"));
   const [userID, setUserID] = useState<string | null>(null);
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
+  const [userInitials, setUserInitials] = useState<string>("");
+  const [greeting, setGreeting] = useState<string>("");
+
   useEffect(() => {
     const fetchUserId = async () => {
       const data = await getUserId();
-      if(typeof data ==='string'){
-       const { id } = JSON.parse(data);
-       setUserID(id);
-      dispatch(setUserId(id));
+      if (typeof data === "string") {
+        const { id } = JSON.parse(data);
+        setUserID(id);
+        dispatch(setUserId(id));
       }
-    
-      
     };
 
     fetchUserId();
   }, []);
+
+  useEffect(() => {
+    const currentHour = new Date().getHours();
+    if (currentHour < 12) {
+      setGreeting("Good Morning");
+    } else if (currentHour < 18) {
+      setGreeting("Good Afternoon");
+    } else {
+      setGreeting("Good Evening");
+    }
+  }, []);
+
   const { isLoading, isError, data } = useQuery({
-    queryKey: ['profile', userID],
+    queryKey: ["profile", userID],
     queryFn: () => getProfile(userID),
     enabled: !!userID,
   });
 
   useEffect(() => {
     if (data) {
-      console.log('Profile Data:', data);
       dispatch(setProfile(data));
       dispatch(setBatchId(data.batch ? data.batch.id : null));
-     dispatch( setDepartmentId(data.batch && data.batch.department ? data.batch.department.id : null));
+      dispatch(
+        setDepartmentId(
+          data.batch && data.batch.department ? data.batch.department.id : null
+        )
+      );
+
+      if (data?.name) {
+        const initials = data.name
+          .split(" ")
+          .map((part) => part.charAt(0).toUpperCase())
+          .join("");
+        setUserInitials(initials);
+      } else {
+        setUserInitials("Unknown");
+      }
     }
   }, [data]);
 
- 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -98,51 +134,62 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={{textAlign:'center',padding:10,margin:hp('1%'),fontSize:20,fontFamily:'Nunito-ExtraBold'}}>Welcome to Hamro College</Text>
-      <Carousel
-        loop
-        width={viewportWidth}
-        height={250}
-        autoPlay={true}
-        data={carouselItems}
-        renderItem={({ item }) => (
-          <View style={styles.carouselItem}>
-            <Image source={item.image} style={styles.carouselImage} />
-            <View style={styles.carouselTextContainer}>
-              <Text style={styles.carouselTitle}>{item.title}</Text>
-              <Text style={styles.carouselText}>{item.text}</Text>
+      <View style={styles.header}>
+        <View style={{ flexDirection: "row", gap: 11 }}>
+          <View style={styles.logo}>
+            <Image source={logo} style={styles.logoImage} />
+          </View>
+          <Text
+            style={{
+              paddingTop: 30,
+              fontFamily: "Nunito-BlackItalic",
+              color: Colors.text,
+              fontSize: 22,
+            }}
+          >
+            {greeting}!
+          </Text>
+        </View>
+        <View style={styles.profile}>
+          <View style={styles.image}>
+            {data && data.profile && data.profile.photoUrl ? (
+              <Image
+                source={{ uri: data.profile.photoUrl }}
+                style={styles.userPhoto}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={styles.userInitialsContainer}>
+                <Text style={styles.userInitials}>{userInitials}</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.bio}>
+            <Text
+              style={{
+                fontFamily: "Nunito-Bold",
+                fontSize: 22,
+                color: Colors.text,
+              }}
+            >
+              {data?.name || "Unknown"}
+            </Text>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={{ fontFamily: "Nunito-Bold", color: Colors.text }}>
+                Roll: {data?.crn}
+              </Text>
+              <Text style={{ fontFamily: "Nunito-Bold", color: Colors.text }}>
+                , Batch: {data?.batch.name}
+              </Text>
             </View>
           </View>
-        )}
-      />
-      <View style={styles.mapContainer}>
-        <Text style={styles.mapTitle}>Our College Location</Text>
-       
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: 27.67141,
-              longitude: 85.33913,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-          showsMyLocationButton
-          showsUserLocation
-          >
-            {/* <Marker
-              coordinate={location.coords}
-              title="Your Location"
-              description="You are here"
-            /> */}
-            <Marker
-              coordinate={collegeLocation}
-              title="Our College"
-              description="Welcome to our college"
-            />
-           
-          </MapView>
-    
-        
+        </View>
+      </View>
+      <View style={styles.carousel}>
+       {/* <MyCarousel /> */}
+      </View>
+      <View style={styles.contents}>
+        <Items />
       </View>
     </View>
   );
@@ -151,79 +198,91 @@ const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E2E2E2',
-    paddingTop: 40,
-   
+    flexDirection: "column",
+    gap: 10,
   },
   carouselItem: {
-  
     borderRadius: 8,
-    height: hp('30%'),
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-    padding:10,
-    
+    height: hp("30%"),
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+    padding: 10,
   },
   carouselImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-   
+    justifyContent: "center",
+    alignItems: "center",
   },
-  carouselTextContainer: {
-    position: 'absolute',
-    padding: 20,
-    
+  header: {
+    flex: 1,
+    backgroundColor: Colors.button,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    paddingTop: 30,
   },
-  carouselTitle: {
-    fontSize: 16,
-   
-    color: 'green',
-    fontFamily:'Nunito-ExtraBold'
+  logo: {},
+  profile: {
+    width: "100%",
+    justifyContent: "flex-start",
+    flexDirection: "row",
+    gap: 20,
+    paddingLeft: 10,
   },
-  carouselText: {
-    fontSize: 14,
-    textAlign: 'center',
-    color: '#fff',
+  image: {},
+  bio: {
+    gap: 10,
   },
-  mapContainer: {
-    padding:20,
-    alignItems: 'center',
-   
-    backgroundColor:'#FFFFFF',
+  logoImage: {
+    width: 80,
+    height: 80,
+  },
+  userPhoto: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+  },
+  userInitialsContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: "gray",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  userInitials: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "white",
+  },
+  carousel: {
+    flex: 1,
 
+    justifyContent: "center",
+    alignItems: "center",
+    // marginLeft:10,
+    // marginRight:10
   },
-  map: {
-    borderTopRightRadius:10,
-    
-    width: wp('100%'),
-    height: 300,
-    borderRadius: 10,
-  },
-  mapTitle: {
-    fontSize: 16,
-    marginBottom: 10,
-    fontFamily:'Nunito-Bold'
-  },
-  loadingText: {
-    fontSize: 16,
-    color: 'grey',
+  contents: {
+    flex: 2,
+    backgroundColor: "blue",
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 18,
   },
 });

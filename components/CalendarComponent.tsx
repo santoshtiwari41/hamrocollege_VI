@@ -6,7 +6,7 @@ import CalendarPicker, {
 import moment from "moment";
 import SelectDay from "@/components/selectDay";
 
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import {useQuery } from "@tanstack/react-query";
 import { receiveCaledarEvent } from "@/services/api";
 import { convertEvents } from "@/data/demoe";
 
@@ -32,7 +32,7 @@ const CalendarComponent = () => {
 
   useEffect(() => {
     generateCustomDatesStyles();
-  }, [events]); // Re-generate styles when events change
+  }, [events]); 
 
   const generateCustomDatesStyles = () => {
     const customStyles = [];
@@ -88,7 +88,7 @@ const CalendarComponent = () => {
 
   if (error) {
     console.log(error);
-    // Handle error state
+    
     return <Text>An error occurred: {error.message}</Text>;
   }
 

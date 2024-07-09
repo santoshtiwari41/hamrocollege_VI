@@ -150,7 +150,7 @@ export const getNotificationByStudent = async (studentId: string) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching notification:', error);
-    throw error; p
+    throw error; 
   }
 };
 export const getNotificationByBatch = async (batchId: string) => {

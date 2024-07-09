@@ -9,7 +9,7 @@ const CustomCalendar = () => {
  
   return (
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false} >
-       <Calendar/>
+       {/* <Calendar/> */}
        <EventList />
   </ScrollView>
 

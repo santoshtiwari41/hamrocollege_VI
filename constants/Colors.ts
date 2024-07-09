@@ -3,9 +3,8 @@ const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
 export const Colors = {
- background:"FFFFFF",
+ background:"#E2E2E2",
  text:"#F1EEE1",
- button:"#1A162B",
+ button:"#7952B3",
  red:'red'
-
 };

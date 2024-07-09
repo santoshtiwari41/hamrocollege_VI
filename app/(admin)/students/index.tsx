@@ -38,8 +38,8 @@ const DepartmentScreen: React.FC = () => {
     useState<number>(0);
   const handleBatchClick = (batch: Batch) => {
     router.push({
-      pathname: `/students/${batch.id}`,
-      params: { batchId: batch.id },
+    pathname: `/students/${batch.id}`,
+    params: { batchId: batch.id },
     });
   };
 

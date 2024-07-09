@@ -121,11 +121,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#E2E2E2',
-    paddingTop: 60,
+    paddingTop: 50,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   title: {
     marginTop: 10,
@@ -137,12 +137,12 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   divider: {
-    marginVertical: 20, 
+    marginVertical: 10, 
     width: '100%', 
     height: 2,
   },
   profileInfoSection: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   profileInfoRow: {
     flexDirection: 'row',

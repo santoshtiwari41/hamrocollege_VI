@@ -8,10 +8,10 @@ import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
  function TabLayout() {
   return (
     <>
-      <StatusBar style="dark" backgroundColor="#E2E2E2" />
+      {/* <StatusBar style="dark" backgroundColor="#E2E2E2" /> */}
       <Tabs
         screenOptions={({ route }) => ({
-          tabBarActiveTintColor: '#DD486E',
+          tabBarActiveTintColor: '#7952B3',
           tabBarInactiveTintColor: '#000',
           tabBarShowLabel: false,
           headerShown: false,
