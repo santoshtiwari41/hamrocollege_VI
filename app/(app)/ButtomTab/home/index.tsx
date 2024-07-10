@@ -24,41 +24,13 @@ import {
 import { Colors } from "@/constants/Colors";
 import { getUserId } from "@/services/asyncStorage";
 import { useDispatch } from "react-redux";
-// import CarouselComponent from "@/components/Carousel";
-import Carousel from "react-native-snap-carousel";
 import MyCarousel from "@/components/Carousel";
 import Items from "@/components/home/Items";
 const { width: viewportWidth } = Dimensions.get("window");
-const images = [
-  Asset.fromModule(require("../../../assets/images/ncit2.jpg")).uri,
-  Asset.fromModule(require("../../../assets/images/ncit3.jpg")).uri,
-  Asset.fromModule(require("../../../assets/images/ncit4.jpg")).uri,
-  Asset.fromModule(require("../../../assets/images/ncit5.jpeg")).uri,
-];
-const carouselItems = [
-  {
-    title: "",
-    text: "",
-    image: { uri: images[0] },
-  },
-  {
-    title: "Explore Our Campus",
-    text: "Modern facilities and beautiful campus.",
-    image: { uri: images[1] },
-  },
-  {
-    title: "Join Us Today",
-    text: "Apply for admission now and start your journey.",
-    image: { uri: images[2] },
-  },
-  {
-    title: "Join Us Today",
-    text: "Apply for admission now and start your journey.",
-    image: { uri: images[5] },
-  },
-];
+
+
 const HomeScreen: React.FC = () => {
-  const logo = Asset.fromModule(require("../../../assets/images/logo3.png"));
+  const logo = Asset.fromModule(require("../../../../assets/images/logo3.png"));
   const [userID, setUserID] = useState<string | null>(null);
   const dispatch = useDispatch();
   const [userInitials, setUserInitials] = useState<string>("");

@@ -1,7 +1,9 @@
 import React, { FunctionComponent } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+
 import { Colors } from '@/constants/Colors';
+import { useNavigation } from 'expo-router';
 
 type IconComponentType = FunctionComponent<{ name: string; size: number; color: string }>;
 
@@ -9,6 +11,7 @@ interface IconProps {
   component: IconComponentType;
   name: string;
   label: string;
+  routeName: string; // New property to specify route name
 }
 
 interface IconSectionProps {
@@ -17,13 +20,19 @@ interface IconSectionProps {
 }
 
 const IconSection: React.FC<IconSectionProps> = ({ title, icons }) => {
+  const navigation = useNavigation(); // Hook to access navigation object
+
+  const handleIconPress = (routeName: string) => {
+    navigation.navigate(routeName); 
+  };
+
   return (
     <View style={styles.sectionContainer}>
       <Text style={[styles.sectionTitle, { fontFamily: 'Nunito-ExtraBold' }]}>{title}</Text>
 
       <View style={styles.iconsContainer}>
         {icons.map((icon, index) => (
-          <TouchableOpacity key={index} style={styles.iconBox}>
+          <TouchableOpacity key={index} style={styles.iconBox} onPress={() => handleIconPress(icon.routeName)}>
             <icon.component name={icon.name} size={30} color={Colors.button} />
             <Text style={styles.iconText}>{icon.label}</Text>
           </TouchableOpacity>
@@ -39,17 +48,17 @@ const Items: React.FC = () => {
       <IconSection
         title="Academic Management"
         icons={[
-          { component: FontAwesome as unknown as IconComponentType, name: 'book', label: 'Assignment' },
-          { component: FontAwesome as unknown as IconComponentType, name: 'graduation-cap', label: 'Results' },
-          { component: MaterialIcons as unknown as IconComponentType, name: 'library-books', label: 'Resources' },
+          { component: FontAwesome as unknown as IconComponentType, name: 'book', label: 'Assignment', routeName: 'Stack/Assignment' },
+          { component: FontAwesome as unknown as IconComponentType, name: 'graduation-cap', label: 'Results', routeName: 'Stack/Result' },
+          { component: MaterialIcons as unknown as IconComponentType, name: 'library-books', label: 'Resources', routeName: 'Stack/Resources' },
         ]}
       />
       <IconSection
         title="Attendance & Administration"
         icons={[
-          { component: FontAwesome as unknown as IconComponentType, name: 'check-square-o', label: 'Attendance' },
-          { component: MaterialIcons as unknown as IconComponentType, name: 'exit-to-app', label: 'Leave Request' },
-          { component: FontAwesome as unknown as IconComponentType, name: 'bell', label: 'Notices' },
+          { component: FontAwesome as unknown as IconComponentType, name: 'check-square-o', label: 'Attendance', routeName: 'hello' },
+          { component: MaterialIcons as unknown as IconComponentType, name: 'exit-to-app', label: 'Leave Request', routeName: 'Stack/LeaveRequest' },
+          { component: FontAwesome as unknown as IconComponentType, name: 'bell', label: 'Notices', routeName: 'Stack/Notices' },
         ]}
       />
     </View>
@@ -70,7 +79,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    fontFamily: 'Nunito-ExtraBold', // Try applying fontFamily directly here
+    fontFamily: 'Nunito-ExtraBold',
   },
   iconsContainer: {
     flexDirection: 'row',

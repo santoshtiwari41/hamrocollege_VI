@@ -46,7 +46,7 @@ const Index: React.FC = () => {
   return (
     <>
       {isAuthenticated ? (
-        <Redirect href="/(app)/home" />
+        <Redirect href="/(app)/ButtomTab/home" />
       ) : (
         <Redirect href="/(auth)/login" />
       )}
